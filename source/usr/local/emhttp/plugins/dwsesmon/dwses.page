@@ -1,8 +1,8 @@
 Menu="Utilities"
 Type="xmenu"
-Title="sesmon"
+Title="SCSI Enclosure Monitor"
 Icon="dwsesmon.png"
-Tag="adjust"
+Tag="cube"
 Markdown="false"
 ---
 <?
