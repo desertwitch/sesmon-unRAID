@@ -2,7 +2,6 @@
 
 NAME="sesmon"
 COMMAND="/usr/bin/sesmon"
-PIDFILE="/var/run/${NAME}.pid"
 DOCROOT="/usr/local/emhttp/plugins/dwsesmon"
 
 error_at_start() {
@@ -11,9 +10,7 @@ error_at_start() {
 }
 
 start() {
-    echo "Starting ${NAME}..."
-
-    if pgrep -x "${NAME}" &>/dev/null; then
+    if pgrep -x "${NAME}" > /dev/null 2>&1; then
         echo "${NAME} is already running."
         return 0
     fi
@@ -31,61 +28,53 @@ start() {
     fi
 
     echo "Starting sesmon service in background..."
-    nohup ${COMMAND} monitor /etc/sesmon/config.yaml </dev/null 2>&1 | logger -t "sesmon" &
-
-    PID=$!
-    echo $PID > ${PIDFILE}
+    nohup "${COMMAND}" monitor /etc/sesmon/config.yaml </dev/null 2>&1 | logger -t "sesmon" > /dev/null 2>&1 &
 
     sleep 2
 
-    if pgrep -x "${NAME}" &>/dev/null; then
-        echo "${NAME} started successfully (with PID: ${PID})."
+    if pgrep -x "${NAME}" > /dev/null 2>&1; then
+        echo "${NAME} started."
         return 0
     else
         echo "${NAME} failed to start."
-        rm -f ${PIDFILE}
         return 1
     fi
 }
 
 stop() {
-    echo "Stopping ${NAME}..."
-
-    if ! pgrep -x "${NAME}" &>/dev/null; then
+    if ! pgrep -x "${NAME}" > /dev/null 2>&1; then
         echo "${NAME} is not running."
-        rm -f ${PIDFILE}
         return 0
     fi
 
-    killall ${NAME} &>/dev/null
+    echo "Stopping ${NAME}..."
+    killall ${NAME} > /dev/null 2>&1
 
     timeout=5
     while [ $timeout -gt 0 ]; do
-        if ! pgrep -x "${NAME}" &>/dev/null; then
+        if ! pgrep -x "${NAME}" > /dev/null 2>&1; then
             echo "${NAME} stopped."
-            rm -f ${PIDFILE}
             return 0
         fi
-        killall ${NAME} &>/dev/null
+        killall ${NAME} > /dev/null 2>&1
         sleep 1
         timeout=$((timeout - 1))
     done
 
-    echo "${NAME} did not stop gracefully, forcing..."
-    killall -9 ${NAME} &>/dev/null
+    echo "${NAME} did not stop yet, forcing..."
+    killall -9 ${NAME} > /dev/null 2>&1
 
-    while pgrep -x "${NAME}" &>/dev/null; do
-        killall -9 ${NAME} &>/dev/null
+    while pgrep -x "${NAME}" > /dev/null 2>&1; do
+        killall -9 ${NAME} > /dev/null 2>&1
         sleep 1
     done
 
     echo "${NAME} stopped (forced)."
-    rm -f ${PIDFILE}
     return 0
 }
 
 status() {
-    if pgrep -x "${NAME}" &>/dev/null; then
+    if pgrep -x "${NAME}" > /dev/null 2>&1; then
         echo "${NAME} is running."
         return 0
     else
