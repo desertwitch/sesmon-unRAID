@@ -84,6 +84,7 @@ fi
 
 removepkg &plgPATH;/*.txz
 rm -f &plgPATH;/*.txz
+rm -rf /etc/sesmon
 rm -rf &emhttp;
 
 echo ""
