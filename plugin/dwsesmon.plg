@@ -34,7 +34,7 @@ run the post-installation scripts
 <FILE Run="/bin/bash">
 <INLINE>
 echo ""
-
+killall sesmon >/dev/null 2>&amp;1
 if [ -x /etc/rc.d/rc.sesmon ]; then
     if ! /etc/rc.d/rc.sesmon stop >/dev/null 2>&amp;1; then
         echo "WARNING:"
@@ -43,8 +43,6 @@ if [ -x /etc/rc.d/rc.sesmon ]; then
         echo "WARNING:"
     fi
 fi
-
-echo ""
 
 if [ -x /usr/local/emhttp/plugins/dwsesmon/scripts/write_config ]; then
     /usr/local/emhttp/plugins/dwsesmon/scripts/write_config
@@ -78,6 +76,7 @@ definition for uninstallation of the plugin
 <FILE Run="/bin/bash" Method="remove">
 <INLINE>
 echo ""
+killall sesmon >/dev/null 2>&amp;1
 if [ -x /etc/rc.d/rc.sesmon ]; then
     if ! /etc/rc.d/rc.sesmon stop >/dev/null 2>&amp;1; then
         echo "WARNING:"
@@ -86,8 +85,6 @@ if [ -x /etc/rc.d/rc.sesmon ]; then
         echo "WARNING:"
     fi
 fi
-
-echo ""
 
 removepkg &plgPATH;/*.txz
 rm -f &plgPATH;/*.txz
