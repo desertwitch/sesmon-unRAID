@@ -43,7 +43,7 @@ if (file_exists('/usr/local/emhttp/plugins/dwsesmon/start-failed')) {
     <input type="hidden" id="dwses-set-cmd" name="#command" value="/usr/local/emhttp/plugins/dwsesmon/scripts/none">
 
     <dl>
-        <dt>Backend Version:</dt>
+        <dt>Backend:</dt>
         <dd>
             <strong><?= isset($dwses_backend) && $dwses_backend ? $dwses_backend : "n/a" ?></strong>
         </dd>
