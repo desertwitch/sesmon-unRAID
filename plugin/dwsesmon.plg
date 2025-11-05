@@ -17,7 +17,7 @@
 <PLUGIN name="&name;" author="&author;" version="&version;" launch="&launch;" pluginURL="&pluginURL;" support="" min="7.0">
 
 <CHANGES>
-## sesmon for UNRAID
+## SCSI Enclosure Monitor for UNRAID
 ###2025.11.05
 - release note: welcome to the first version of the sesmon package.
 - release note: please report any problems in the support topic.
@@ -63,7 +63,7 @@ fi
 
 echo ""
 echo "-------------------------------------------------------------"
-echo " sesmon for UNRAID has been installed."
+echo " SCSI Enclosure Monitor for UNRAID has been installed."
 echo " Version: &version; / Plugin Maintainer: &author;"
 echo "-------------------------------------------------------------"
 echo ""
@@ -93,7 +93,7 @@ rm -rf &emhttp;
 
 echo ""
 echo "-----------------------------------------------------------"
-echo " sesmon for UNRAID has been removed."
+echo " SCSI Enclosure Monitor for UNRAID has been removed."
 echo " Version: &version; / Plugin Maintainer: &author;"
 echo "-----------------------------------------------------------"
 echo ""

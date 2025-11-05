@@ -1,3 +1,3 @@
-**sesmon for UNRAID**
+**SCSI Enclosure Monitor for UNRAID**
 
-SCSI Enclosure Services (SES) Monitoring and Alerting Daemon
+Monitors SES-capable SCSI enclosures (such as disk shelves)
