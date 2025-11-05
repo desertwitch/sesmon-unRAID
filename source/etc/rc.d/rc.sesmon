@@ -28,7 +28,7 @@ start() {
     fi
 
     echo "Starting sesmon service in background..."
-    nohup "${COMMAND}" monitor /etc/sesmon/config.yaml </dev/null 2>&1 | logger -t "sesmon" >/dev/null 2>&1 &
+    nohup "${COMMAND}" monitor /etc/sesmon/config.yaml </dev/null 2>&1 | logger -st "sesmon" >>/var/log/sesmon.log 2>&1 &
 
     sleep 2
 
