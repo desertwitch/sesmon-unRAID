@@ -28,6 +28,9 @@ cp -n $DOCROOT/default.cfg $BOOT/dwsesmon.cfg
 mkdir -p $BOOT/config
 mkdir -p /etc/sesmon
 
+mkdir -p /var/lib/sesmon
+ln -sf /var/lib/sesmon $DOCROOT/json
+
 cp -nr $DOCROOT/defaults/* $BOOT/config/
 cp -rf $BOOT/config/* /etc/sesmon/
 
