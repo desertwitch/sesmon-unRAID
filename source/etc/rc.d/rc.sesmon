@@ -1,8 +1,16 @@
 #!/bin/bash
 
 NAME="sesmon"
-COMMAND="/usr/local/bin/sesmon"
+COMMAND="/usr/bin/sesmon"
 PIDFILE="/var/run/${NAME}.pid"
+DOCROOT="/usr/local/emhttp/plugins/dwsesmon"
+
+error_at_start() {
+    if [ -d $DOCROOT/misc ]; then
+        touch $DOCROOT/start-failed
+    fi
+    exit 1
+}
 
 start() {
     echo "Starting ${NAME}..."
@@ -95,7 +103,7 @@ restart() {
 
 case "$1" in
     start)
-        start
+        start || error_at_start
         ;;
     stop)
         stop

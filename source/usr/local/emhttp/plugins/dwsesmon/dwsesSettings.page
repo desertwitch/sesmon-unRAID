@@ -24,7 +24,19 @@ Markdown="false"
  */
 require_once '/usr/local/emhttp/plugins/dwsesmon/include/dwses_config.php';
 require_once '/usr/local/emhttp/plugins/dwsesmon/include/dwses_helpers.php';
+
+$lastStartFailed = false;
+if (file_exists('/usr/local/emhttp/plugins/dwsesmon/start-failed')) {
+    if (!$dwses_running) { $lastStartFailed = true; }
+    unlink('/usr/local/emhttp/plugins/dwsesmon/start-failed');
+}
 ?>
+
+<?if ($lastStartFailed):?>
+<div class="red-text" style="border: 1px solid red;padding: 5px;">
+    sesmon was not able to start successfully - please check the <a href="/Tools/Syslog" target="_blank">SYSLOG</a> for more information.
+</div><br>
+<?endif;?>
 
 <form markdown="0" id="dwses-settings" name="dwses_settings" method="POST" action="/update.php" target="progressFrame">
     <input type="hidden" id="dwses-set-file" name="#file" value="dwsesmon/dwsesmon.cfg">
