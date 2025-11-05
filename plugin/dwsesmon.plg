@@ -1,0 +1,98 @@
+<?xml version='1.0' standalone='yes'?>
+
+<!DOCTYPE PLUGIN [
+<!ENTITY name      "dwsesmon">
+<!ENTITY author    "desertwitch">
+<!ENTITY version   "2025.11.05">
+<!ENTITY launch    "Settings/dwses">
+<!ENTITY gitURL    "https://raw.githubusercontent.com/&author;/sesmon-unRAID/main">
+<!ENTITY pluginURL "&gitURL;/plugin/&name;.plg">
+<!ENTITY pkgURL    "&gitURL;/packages">
+<!ENTITY plgPATH   "/boot/config/plugins/&name;">
+<!ENTITY plgNAME   "mirsht-2025.08.21-x86_64-1">
+<!ENTITY plgMD5    "e807eb9fa34c1648f38901560847e50b">
+<!ENTITY emhttp    "/usr/local/emhttp/plugins/&name;">
+]>
+
+<PLUGIN name="&name;" author="&author;" version="&version;" launch="&launch;" pluginURL="&pluginURL;" support="" min="7.0">
+
+<CHANGES>
+## sesmon for UNRAID
+###2025.11.05
+- release note: welcome to the first version of the sesmon package.
+- release note: please report any problems in the support topic.
+</CHANGES>
+
+<FILE Name="&plgPATH;/&plgNAME;.txz" Min="7.0" Run="upgradepkg --install-new">
+<URL>&gitURL;/archive/&plgNAME;.txz</URL>
+<MD5>&plgMD5;</MD5>
+</FILE>
+
+<!--
+run the post-installation scripts
+-->
+<FILE Run="/bin/bash">
+<INLINE>
+if [ -x /etc/rc.d/rc.sesmon ]; then
+    if ! /etc/rc.d/rc.sesmon stop >/dev/null 2>&amp;1; then
+        echo "WARNING:"
+        echo "WARNING: The sesmon installation script was not able to stop the sesmon service."
+        echo "WARNING: IN CASE OF PROBLEMS, please REBOOT YOUR SYSTEM to complete any upgrades."
+        echo "WARNING:"
+    fi
+fi
+
+if [ -x /usr/local/emhttp/plugins/dwsesmon/scripts/write_config ]; then
+    /usr/local/emhttp/plugins/dwsesmon/scripts/write_config
+fi
+
+if [ -x /etc/rc.d/rc.sesmon ]; then
+    source "/boot/config/plugins/dwsesmon/dwsesmon.cfg"
+    if [ "$SERVICE" == "enable" ]; then
+        echo "Starting sesmon service..."
+        /etc/rc.d/rc.sesmon start 2>&amp;1 | logger -t "rc.sesmon"
+        if [ "${PIPESTATUS[0]}" -eq 0 ]; then
+            echo "sesmon service has been started successfully."
+        else
+            echo "WARNING: sesmon service failed to start, check your configuration and the SYSLOG."
+        fi
+    fi
+fi
+
+echo ""
+echo "-------------------------------------------------------------"
+echo " sesmon for UNRAID has been installed."
+echo " Version: &version; / Plugin Maintainer: &author;"
+echo "-------------------------------------------------------------"
+echo ""
+</INLINE>
+</FILE>
+
+<!--
+definition for uninstallation of the plugin
+-->
+<FILE Run="/bin/bash" Method="remove">
+<INLINE>
+if [ -x /etc/rc.d/rc.sesmon ]; then
+    if ! /etc/rc.d/rc.sesmon stop >/dev/null 2>&amp;1; then
+        echo "WARNING:"
+        echo "WARNING: The sesmon uninstallation script was not able to stop the sesmon service."
+        echo "WARNING: IN CASE OF PROBLEMS, please REBOOT YOUR SYSTEM to remove any remaining packages."
+        echo "WARNING:"
+    fi
+fi
+
+removepkg &plgPATH;/*.txz
+rm -rf &plgPATH;
+rm -rf &emhttp;
+
+echo ""
+echo "-----------------------------------------------------------"
+echo " sesmon for UNRAID has been removed."
+echo " Version: &version; / Plugin Maintainer: &author;"
+echo "-----------------------------------------------------------"
+echo ""
+</INLINE>
+</FILE>
+
+</PLUGIN>

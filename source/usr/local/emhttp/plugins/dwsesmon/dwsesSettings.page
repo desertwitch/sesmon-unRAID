@@ -1,0 +1,105 @@
+Menu="dwses:1"
+Title="sesmon Settings"
+Tag="sliders"
+Markdown="false"
+---
+<?
+/* Copyright Derek Macias (parts of code from NUT package)
+ * Copyright macester (parts of code from NUT package)
+ * Copyright gfjardim (parts of code from NUT package)
+ * Copyright SimonF (parts of code from NUT package)
+ * Copyright Dan Landon (parts of code from Web GUI)
+ * Copyright Bergware International (parts of code from Web GUI)
+ * Copyright Lime Technology (any and all other parts of Unraid)
+ *
+ * Copyright desertwitch (as author and maintainer of this file)
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License 2
+ * as published by the Free Software Foundation.
+ *
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ */
+require_once '/usr/local/emhttp/plugins/dwsesmon/include/dwses_config.php';
+require_once '/usr/local/emhttp/plugins/dwsesmon/include/dwses_helpers.php';
+?>
+
+<form markdown="0" id="dwses-settings" name="dwses_settings" method="POST" action="/update.php" target="progressFrame">
+    <input type="hidden" id="dwses-set-file" name="#file" value="dwsesmon/dwsesmon.cfg">
+    <input type="hidden" id="dwses-set-cmd" name="#command" value="/usr/local/emhttp/plugins/dwsesmon/scripts/none">
+
+    <dl>
+        <dt>sesmon Backend:</dt>
+        <dd>
+            <strong><?= isset($dwses_backend) && $dwses_backend ? $dwses_backend : "n/a" ?></strong>
+        </dd>
+    </dl>
+
+    <dl>
+        <dt><strong>sesmon Service:</strong></dt>
+        <dd>
+            <select id="SERVICE" name="SERVICE" size="1">
+                <?=mk_option($dwses_service, "disable", "Disable");?>
+                <?=mk_option($dwses_service, "enable", "Enable");?>
+            </select>
+        </dd>
+    </dl>
+
+    <blockquote class="inline_help">
+    <p>This setting controls if the sesmon service should be started.</p>
+    </blockquote>
+
+    <dl>
+        <dt>
+            <span>
+                <input id="RESETCONF" class="dwses-run dwses-tip" type="button" value="Reset Config" title="Reverts the whole configuration to its default state, including the program configuration.">
+            </span>
+        </dt>
+        <dd>
+            <span>
+                <input type="submit" id="btnApply" name="#apply" value="Apply">
+                <input type="button" value="Done" onclick="done()">
+                <input id="DEFAULT" type="submit" class="dwses-run dwses-tip" name="#default" value="Default" title="Reverts the displayed settings to their default values, but not the program configuration.">
+            </span>
+        </dd>
+    </dl>
+</form>
+
+<script>
+function dwsesRunning() {
+    if ($('#SERVICE').val() === 'enable') {
+        $('#command').val('/usr/local/emhttp/plugins/dwsesmon/scripts/start');
+    } else {
+        $('#command').val('/usr/local/emhttp/plugins/dwsesmon/scripts/stop');
+    }
+
+    const dwses_running = <?= json_encode($dwses_running); ?>;
+
+    if (dwses_running) {
+        $('.dwses-run').prop('disabled', true);
+    } else {
+        $('.dwses-run').prop('disabled', false);
+    }
+}
+
+function dwsesResetConfig() {
+    $('#dwses-set-cmd').val('');
+    openBox('/plugins/dwsesmon/scripts/resetconf', 'sesmon Configuration Reset', 600, 600, true);
+}
+$(function() {
+    showStatus('sesmon');
+    dwsesRunning();
+
+    $('#RESETCONF').click(function(){ swal({title:"Are you sure?",text:"This action will return any existing configuration to their defaults!",type:"warning",html:true,showCancelButton:true}, dwsesResetConfig); });
+
+    $('.dwses-tip').tooltipster({
+        maxWidth: 300
+    });
+
+    if ( typeof caPluginUpdateCheck === "function" ) {
+        caPluginUpdateCheck("dwsesmon.plg",{name:"sesmon"});
+    }
+});
+</script>

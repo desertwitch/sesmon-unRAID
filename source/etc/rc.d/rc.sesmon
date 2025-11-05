@@ -1,0 +1,115 @@
+#!/bin/bash
+
+NAME="sesmon"
+COMMAND="/usr/local/bin/sesmon"
+PIDFILE="/var/run/${NAME}.pid"
+
+start() {
+    echo "Starting ${NAME}..."
+
+    if pgrep -x "${NAME}" &>/dev/null; then
+        echo "${NAME} is already running."
+        return 0
+    fi
+
+    echo "Checking sesmon configuration..."
+    if ! ${COMMAND} check /etc/sesmon/config.yaml; then
+        echo "Configuration check has failed."
+        return 1
+    fi
+
+    echo "Testing sesmon configuration..."
+    if ! ${COMMAND} test /etc/sesmon/config.yaml; then
+        echo "Configuration test has failed."
+        return 1
+    fi
+
+    echo "Starting sesmon service in background..."
+    nohup ${COMMAND} monitor /etc/sesmon/config.yaml 2>&1 | logger -t "sesmon" &
+
+    PID=$!
+    echo $PID > ${PIDFILE}
+
+    sleep 2
+
+    if pgrep -x "${NAME}" &>/dev/null; then
+        echo "${NAME} started successfully (with PID: ${PID})."
+        return 0
+    else
+        echo "${NAME} failed to start."
+        rm -f ${PIDFILE}
+        return 1
+    fi
+}
+
+stop() {
+    echo "Stopping ${NAME}..."
+
+    if ! pgrep -x "${NAME}" &>/dev/null; then
+        echo "${NAME} is not running."
+        rm -f ${PIDFILE}
+        return 0
+    fi
+
+    killall ${NAME} &>/dev/null
+
+    timeout=5
+    while [ $timeout -gt 0 ]; do
+        if ! pgrep -x "${NAME}" &>/dev/null; then
+            echo "${NAME} stopped."
+            rm -f ${PIDFILE}
+            return 0
+        fi
+        killall ${NAME} &>/dev/null
+        sleep 1
+        timeout=$((timeout - 1))
+    done
+
+    echo "${NAME} did not stop gracefully, forcing..."
+    killall -9 ${NAME} &>/dev/null
+
+    while pgrep -x "${NAME}" &>/dev/null; do
+        killall -9 ${NAME} &>/dev/null
+        sleep 1
+    done
+
+    echo "${NAME} stopped (forced)."
+    rm -f ${PIDFILE}
+    return 0
+}
+
+status() {
+    if pgrep -x "${NAME}" &>/dev/null; then
+        echo "${NAME} is running."
+        return 0
+    else
+        echo "${NAME} is not running."
+        return 1
+    fi
+}
+
+restart() {
+    stop
+    start
+}
+
+case "$1" in
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    restart)
+        restart
+        ;;
+    status)
+        status
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart|status}"
+        exit 1
+        ;;
+esac
+
+exit $?
