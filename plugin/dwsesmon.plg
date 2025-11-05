@@ -83,7 +83,7 @@ if [ -x /etc/rc.d/rc.sesmon ]; then
 fi
 
 removepkg &plgPATH;/*.txz
-rm -rf &plgPATH;
+rm -f &plgPATH;/*.txz
 rm -rf &emhttp;
 
 echo ""

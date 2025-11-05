@@ -19,6 +19,7 @@ BOOT="/boot/config/plugins/dwsesmon"
 DOCROOT="/usr/local/emhttp/plugins/dwsesmon"
 
 chmod 755 /usr/bin/sesmon
+chmod 755 /etc/rc.d/rc.sesmon
 chmod 755 $DOCROOT/scripts/*
 
 cp -n $DOCROOT/default.cfg $BOOT/dwsesmon.cfg

@@ -70,9 +70,9 @@ require_once '/usr/local/emhttp/plugins/dwsesmon/include/dwses_helpers.php';
 <script>
 function dwsesRunning() {
     if ($('#SERVICE').val() === 'enable') {
-        $('#command').val('/usr/local/emhttp/plugins/dwsesmon/scripts/start');
+        $('#dwses-set-cmd').val('/usr/local/emhttp/plugins/dwsesmon/scripts/start');
     } else {
-        $('#command').val('/usr/local/emhttp/plugins/dwsesmon/scripts/stop');
+        $('#dwses-set-cmd').val('/usr/local/emhttp/plugins/dwsesmon/scripts/stop');
     }
 
     const dwses_running = <?= json_encode($dwses_running); ?>;

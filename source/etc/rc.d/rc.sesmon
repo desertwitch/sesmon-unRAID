@@ -25,7 +25,7 @@ start() {
     fi
 
     echo "Starting sesmon service in background..."
-    nohup ${COMMAND} monitor /etc/sesmon/config.yaml 2>&1 | logger -t "sesmon" &
+    nohup ${COMMAND} monitor /etc/sesmon/config.yaml </dev/null 2>&1 | logger -t "sesmon" &
 
     PID=$!
     echo $PID > ${PIDFILE}
