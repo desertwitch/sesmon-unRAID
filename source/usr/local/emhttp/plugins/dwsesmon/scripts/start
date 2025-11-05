@@ -18,6 +18,6 @@
 echo "Starting sesmon..."
 echo "Starting sesmon..." | logger -t "sesmon-plugin"
 
-/etc/rc.sesmon start | logger -t "rc.sesmon"
+/etc/rc.d/rc.sesmon start | logger -t "rc.sesmon"
 
 sleep 1

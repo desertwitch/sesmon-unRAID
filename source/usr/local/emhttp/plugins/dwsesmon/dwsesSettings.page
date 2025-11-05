@@ -104,6 +104,7 @@ $(function() {
     showStatus('sesmon');
     dwsesRunning();
 
+    $('#SERVICE').change(dwsesRunning);
     $('#RESETCONF').click(function(){ swal({title:"Are you sure?",text:"This action will return any existing configuration to their defaults!",type:"warning",html:true,showCancelButton:true}, dwsesResetConfig); });
 
     $('.dwses-tip').tooltipster({

@@ -18,6 +18,6 @@
 echo "Stopping sesmon..."
 echo "Stopping sesmon..." | logger -t "sesmon-plugin"
 
-/etc/rc.sesmon stop | logger -t "rc.sesmon"
+/etc/rc.d/rc.sesmon stop | logger -t "rc.sesmon"
 
 sleep 1
