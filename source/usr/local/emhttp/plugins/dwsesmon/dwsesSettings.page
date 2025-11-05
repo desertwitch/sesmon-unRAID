@@ -56,6 +56,12 @@ if (file_exists('/usr/local/emhttp/plugins/dwsesmon/start-failed')) {
                 <?=mk_option($dwses_service, "disable", "Disable");?>
                 <?=mk_option($dwses_service, "enable", "Enable");?>
             </select>
+            <?if(file_exists("/var/log/sesmon.log")):?>
+            <a onclick="openTerminal('log','sesmon','sesmon.log')" style="color:inherit;margin-left:5px;cursor:help;">
+                <i class="fa fa-book dwses-tip" title="sesmon Service Logs"></i>
+                <?if(version_compare(parse_ini_file('/etc/unraid-version')['version'],'7.1.99', '>')):?> sesmon Service Logs<?endif;?>
+            </a>
+            <?endif;?>
         </dd>
     </dl>
 
