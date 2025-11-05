@@ -6,9 +6,7 @@ PIDFILE="/var/run/${NAME}.pid"
 DOCROOT="/usr/local/emhttp/plugins/dwsesmon"
 
 error_at_start() {
-    if [ -d $DOCROOT/misc ]; then
-        touch $DOCROOT/start-failed
-    fi
+    touch $DOCROOT/start-failed
     exit 1
 }
 
