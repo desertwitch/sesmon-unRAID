@@ -1,8 +1,10 @@
 # sesmon configuration file
-# "check" and "test" commands can help verify configuration files
 
 # Disable timestamps in log output
-disable_timestamps: false
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# !!   Keep this set to true on Unraid OS - do not change it.   !!
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+disable_timestamps: true
 
 # List of devices to monitor
 #
@@ -58,14 +60,13 @@ devices:
       # If false, monitoring resumes normally after poll_backoff_time elapses
       poll_backoff_stopmonitor: false
 
-      # Folder to write JSON files of device state and alerts to
-      # Must be unique per device and creates the following files:
-      #   - current.json (raw snapshot of current device state)
-      #   - current_parsed.json (parsed snapshot of current device state)
-      #   - change-YYYYMMDD-HHMMSS.json (single timestamped change report)
-      #   - change-YYYYMMDD-HHMMSS.json (single timestamped change report)
-      #   - ...
-      # Default: (none)
+      # Folder to write JSON files of this device's state and any alerts to
+      # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      # !! Must be unique per device and on Unraid OS a subfolder of: !!
+      # !!     "/var/lib/sesmon/", e.g. -> "/var/lib/sesmon/JBOD"     !!
+      # !! If you do not follow this, the dashboard will not see it.  !!
+      # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      # Note that the folder will be created - if it does not already exist
       output_dir: "/var/lib/sesmon/JBOD"
 
       # Output also verbose operational information as part of log output
@@ -75,13 +76,16 @@ devices:
     # If omitted, alerts are emitted only as part of regular log output
     script_notifier:
       # Path to executable notification script
+      # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      # !! Do not change this location to anything else on Unraid OS  !!
+      # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       # Script receives these arguments:
       #   $1: Device path (e.g., /dev/sg25)
       #   $2: SAS address (e.g., 0x500a098012345678)
       #   $3: Device description (e.g., "JBOD")
       #   $4: Notification message in textual format
       #   $5: Change report in JSON format (where applicable)
-      script: "/usr/local/bin/my-notify-script.sh"
+      script: "/etc/sesmon/notify.sh"
 
       # Optional: Notification agent configuration
       # Omitted settings use defaults as shown below
