@@ -2,7 +2,7 @@ Menu="Utilities"
 Type="xmenu"
 Title="SCSI Enclosure Monitor"
 Icon="dwsesmon.png"
-Tag="heartbeat"
+Tag="flash"
 Markdown="false"
 ---
 <?
