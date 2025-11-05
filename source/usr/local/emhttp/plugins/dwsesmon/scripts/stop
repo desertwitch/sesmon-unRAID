@@ -16,8 +16,5 @@
 # included in all copies or substantial portions of the Software.
 #
 echo "Stopping sesmon..."
-echo "Stopping sesmon..." | logger -t "sesmon-plugin"
-
 /etc/rc.d/rc.sesmon stop 2>&1 | logger -t "rc.sesmon"
-
 sleep 1

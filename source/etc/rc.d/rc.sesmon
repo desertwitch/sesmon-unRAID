@@ -15,19 +15,7 @@ start() {
         return 0
     fi
 
-    echo "Checking sesmon configuration..."
-    if ! ${COMMAND} check /etc/sesmon/config.yaml; then
-        echo "Configuration check has failed."
-        return 1
-    fi
-
-    echo "Testing sesmon configuration..."
-    if ! ${COMMAND} test /etc/sesmon/config.yaml; then
-        echo "Configuration test has failed."
-        return 1
-    fi
-
-    echo "Starting sesmon service in background..."
+    echo "Starting ${NAME}..."
     nohup "${COMMAND}" monitor /etc/sesmon/config.yaml </dev/null 2>&1 | logger -st "sesmon" >>/var/log/sesmon.log 2>&1 &
 
     sleep 2

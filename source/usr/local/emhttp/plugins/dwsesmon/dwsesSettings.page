@@ -43,7 +43,7 @@ if (file_exists('/usr/local/emhttp/plugins/dwsesmon/start-failed')) {
     <input type="hidden" id="dwses-set-cmd" name="#command" value="/usr/local/emhttp/plugins/dwsesmon/scripts/none">
 
     <dl>
-        <dt>sesmon Backend:</dt>
+        <dt>sesmon:</dt>
         <dd>
             <strong><?= isset($dwses_backend) && $dwses_backend ? $dwses_backend : "n/a" ?></strong>
         </dd>
@@ -53,8 +53,8 @@ if (file_exists('/usr/local/emhttp/plugins/dwsesmon/start-failed')) {
         <dt><strong>sesmon Service:</strong></dt>
         <dd>
             <select id="SERVICE" name="SERVICE" size="1">
-                <?=mk_option($dwses_service, "disable", "Disable");?>
-                <?=mk_option($dwses_service, "enable", "Enable");?>
+                <?=mk_option($dwses_service, "disable", "No");?>
+                <?=mk_option($dwses_service, "enable", "Yes");?>
             </select>
             <?if(file_exists("/var/log/sesmon.log")):?>
             <a onclick="openTerminal('log','sesmon','sesmon.log')" style="color:inherit;margin-left:5px;cursor:help;">
@@ -80,6 +80,7 @@ if (file_exists('/usr/local/emhttp/plugins/dwsesmon/start-failed')) {
                 <input type="submit" id="btnApply" name="#apply" value="Apply">
                 <input type="button" value="Done" onclick="done()">
                 <input id="DEFAULT" type="submit" class="dwses-run dwses-tip" name="#default" value="Default" title="Reverts the displayed settings to their default values, but not the program configuration.">
+                <input type="button" class="dwses-run dwses-tip" id="RESTART" value="Restart Service">
             </span>
         </dd>
     </dl>
@@ -111,7 +112,13 @@ $(function() {
     dwsesRunning();
 
     $('#SERVICE').change(dwsesRunning);
+
     $('#RESETCONF').click(function(){ swal({title:"Are you sure?",text:"This action will return any existing configuration to their defaults!",type:"warning",html:true,showCancelButton:true}, dwsesResetConfig); });
+
+    $('#RESTART').click(function(){
+        $('#dwses-set-cmd').val('/usr/local/emhttp/plugins/dwsesmon/scripts/restart');
+        $('#dwses-settings').submit();
+    });
 
     $('.dwses-tip').tooltipster({
         maxWidth: 300
