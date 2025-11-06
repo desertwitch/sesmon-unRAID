@@ -1,0 +1,3 @@
+#!/bin/bash
+echo "Clearing devices..."
+rm -rvf /var/lib/sesmon/* | logger -t "sesmon-plugin"

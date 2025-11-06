@@ -1,4 +1,4 @@
-Menu="dwses:1"
+Menu="dwses:2"
 Title="Service Settings"
 Tag="sliders"
 Markdown="false"
@@ -72,6 +72,8 @@ if (file_exists('/usr/local/emhttp/plugins/dwsesmon/start-failed')) {
     <dl>
         <dt>
             <span>
+                <input id="CLEARDEVICES" class="dwses-tip" type="button" value="Clear Devices" title="Clear all devices from the dashboard (until next poll)">
+                <input id="CLEARALARMS" class="dwses-tip" type="button" value="Clear Alarms" title="Clear all alarms from the dashboard (until next alarm">
                 <input id="RESETCONF" class="dwses-run dwses-tip" type="button" value="Reset Config" title="Reverts the whole configuration to its default state, including the program configuration.">
             </span>
         </dt>
@@ -116,6 +118,16 @@ $(function() {
     $('#SERVICE').change(dwsesRunning);
 
     $('#RESETCONF').click(function(){ swal({title:"Are you sure?",text:"This action will return any existing configuration to their defaults!",type:"warning",html:true,showCancelButton:true}, dwsesResetConfig); });
+
+    $('#CLEARDEVICES').click(function(){
+        $('#dwses-set-cmd').val('/usr/local/emhttp/plugins/dwsesmon/scripts/clear_devices');
+        $('#dwses-settings').submit();
+    });
+
+    $('#CLEARALARMS').click(function(){
+        $('#dwses-set-cmd').val('/usr/local/emhttp/plugins/dwsesmon/scripts/clear_alarms');
+        $('#dwses-settings').submit();
+    });
 
     $('#RESTART').click(function(){
         $('#dwses-set-cmd').val('/usr/local/emhttp/plugins/dwsesmon/scripts/restart');

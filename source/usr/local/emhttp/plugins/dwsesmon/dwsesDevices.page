@@ -1,0 +1,446 @@
+Menu="dwses:2"
+Title="Enclosure Devices"
+Tag="server"
+Markdown="false"
+---
+<style>
+    .status-ok { color: green; }
+    .status-critical { color: red; font-weight: bold; }
+    .status-noncritical { color: orange; }
+    .status-unrecoverable { color: darkred; font-weight: bold; }
+    .status-unsupported { color: #999; }
+    .status-not-installed { color: #999; }
+    .status-unknown { color: #cc9900; }
+    .status-not-available { color: #999; }
+    .status-other { color: #999; }
+
+    .device-section-header,
+    .alarm-section-header,
+    .elements-section-header {
+        background-color: #e9ecef;
+        border: 1px solid #dee2e6;
+        border-bottom: none;
+        color: #333;
+    }
+
+    .device-section-header {
+        font-size: 1.1em;
+    }
+
+    .alarm-section-header,
+    .elements-section-header {
+        font-size: 1.0em;
+    }
+
+    .alarm-file-header th {
+        background-color: #fff3cd;
+        font-weight: bold;
+        border-top: 1px solid #ddd;
+    }
+
+    .status-summary {
+        float: right;
+        font-weight: normal;
+    }
+
+    .alarm-count {
+        color: red;
+        font-weight: bold;
+    }
+
+    .time-ok {
+        color: green;
+    }
+
+    .time-stale {
+        color: red;
+    }
+
+    .device-section-header {
+        cursor: pointer;
+    }
+
+    .device-content {
+        display: none;
+    }
+</style>
+
+<div id="content"></div>
+
+<script>
+    function safe(val) {
+        return (val !== undefined && val !== null) ? val : '';
+    }
+
+    function sortElementId(a, b) {
+        var parseId = function(id) {
+            var parts = id.split('#');
+            return [parseInt(parts[0]), parseInt(parts[1])];
+        };
+
+        var aParts = parseId(a);
+        var bParts = parseId(b);
+
+        if (aParts[0] !== bParts[0]) {
+            return aParts[0] - bParts[0];
+        }
+        return aParts[1] - bParts[1];
+    }
+
+    function getTimeAgo(timestamp, withColor) {
+        if (timestamp == undefined || timestamp == null) return '';
+
+        var then = new Date(timestamp);
+        if (isNaN(then.getTime())) {
+            return '';
+        }
+
+        var now = new Date();
+        var diffMs = now - then;
+        var diffMins = Math.floor(diffMs / 60000);
+
+        var isStale = diffMins > 10;
+        var timeClass = isStale ? 'time-stale' : 'time-ok';
+
+        var timeText = '';
+        if (diffMins < 1) {
+            timeText = 'just now';
+        } else if (diffMins < 60) {
+            timeText = diffMins + ' min ago';
+        } else {
+            var hours = Math.floor(diffMins / 60);
+            timeText = hours + ' hour' + (hours > 1 ? 's' : '') + ' ago';
+        }
+
+        if (withColor) {
+            return '<span class="time-ago ' + timeClass + '">(' + timeText + ')</span>';
+        } else {
+            return '<span class="time-ago">(' + timeText + ')</span>';
+        }
+    }
+
+    function getStatusClass(status) {
+        if (status == undefined || status == null) return '';
+
+        var s = Number(status);
+        if (s === 1) return 'status-ok';
+        else if (s === 2) return 'status-critical';
+        else if (s === 3) return 'status-noncritical';
+        else if (s === 4) return 'status-unrecoverable';
+        else if (s === 0) return 'status-unsupported';
+        else if (s === 5) return 'status-not-installed';
+        else if (s === 6) return 'status-unknown';
+        else if (s === 7) return 'status-not-available';
+
+        return '';
+    }
+
+    function toggleChevron(targetId) {
+        var chevronId = targetId + '-chevron';
+
+        if ($(targetId).is(':visible')) {
+            $(chevronId).removeClass("fa-chevron-right").addClass("fa-chevron-down");
+        } else {
+            $(chevronId).removeClass("fa-chevron-down").addClass("fa-chevron-right");
+        }
+    }
+
+    function buildDevice(folderName, data, alarmDataArray, targetContainer) {
+        var html = '';
+
+        data = data || {};
+        data.device = data.device || {};
+        data.raw = data.raw || {};
+
+        var deviceContentId = 'content-' + folderName;
+        var alarmSectionId = 'alarms-' + folderName;
+        var elementsSectionId = 'elements-' + folderName;
+
+        // Alarms section status counts (do this here because device section needs it)
+        var totalAlarms = 0;
+        var alarmCounts = {2: 0, 3: 0, 4: 0, 1: 0, other: 0};
+        $.each(alarmDataArray, function(idx, alarmData) {
+            if (!alarmData || !Array.isArray(alarmData.changes)) {
+                return;
+            }
+
+            totalAlarms += alarmData.changes.length;
+
+            $.each(alarmData.changes, function(changeIdx, change) {
+                if (!change || !change.after) return;
+
+                var status = Number(change.after.status);
+
+                if (status === 2) alarmCounts[2]++;
+                else if (status === 3) alarmCounts[3]++;
+                else if (status === 4) alarmCounts[4]++;
+                else if (status === 1) alarmCounts[1]++;
+                else alarmCounts.other++;
+            });
+        });
+
+        // Device section status counts
+        var statusCounts = {1: 0, 2: 0, 3: 0, 4: 0, other: 0};
+        $.each(data.raw, function(elementId, element) {
+                if (!element || element.status === undefined || element.status === null) return;
+
+            var status = Number(element.status);
+            if (status in statusCounts) {
+                statusCounts[status]++;
+            } else {
+                statusCounts.other++;
+            }
+        });
+
+        var deviceSummary = [];
+        if (totalAlarms > 0) deviceSummary.push('<span class="alarm-count">' + totalAlarms + ' Alarm' + (totalAlarms > 1 ? 's' : '') + '</span>');
+        if (statusCounts[2] > 0) deviceSummary.push('<span class="status-critical">' + statusCounts[2] + ' Critical</span>');
+        if (statusCounts[3] > 0) deviceSummary.push('<span class="status-noncritical">' + statusCounts[3] + ' Noncritical</span>');
+        if (statusCounts[4] > 0) deviceSummary.push('<span class="status-unrecoverable">' + statusCounts[4] + ' Unrecoverable</span>');
+        if (statusCounts[1] > 0) deviceSummary.push('<span class="status-ok">' + statusCounts[1] + ' OK</span>');
+        if (statusCounts.other > 0) deviceSummary.push('<span class="status-other">' + statusCounts.other + ' Other</span>');
+
+        var alarmTimeHtml = '';
+        if (alarmDataArray.length > 0) {
+            alarmDataArray.sort(function(a, b) {
+                return new Date(b.detected_at) - new Date(a.detected_at);
+            });
+            alarmTimeHtml = ' - Alarm: ' + alarmDataArray[0].detected_at + ' ' + getTimeAgo(alarmDataArray[0].detected_at, true);
+        }
+
+        // Device section header
+        html += '<div class="device-section-header" data-toggle-id="' + deviceContentId + '" style="cursor: pointer;">';
+        html += '<i class="fa fa-chevron-right" id="'+ deviceContentId +'-chevron"></i> ';
+        html += '' + folderName + ' - ' + safe(data.device.description) + ' ';
+        html += '(' + (safe(data.device.address) || 'N/A') + ') - ';
+        html += 'Updated: ' + safe(data.captured_at) + ' ' + getTimeAgo(data.captured_at, true) + alarmTimeHtml;
+        html += '<span class="status-summary">' + deviceSummary.join(' | ') + '</span>';
+        html += '</div>';
+
+        html += '<div id="' + deviceContentId + '" class="device-content">';
+
+        // Alarms Section
+        if (alarmDataArray.length > 0) {
+            var alarmSummary = [];
+            if (alarmCounts[2] > 0) alarmSummary.push('<span class="status-critical">' + alarmCounts[2] + ' Critical</span>');
+            if (alarmCounts[3] > 0) alarmSummary.push('<span class="status-noncritical">' + alarmCounts[3] + ' Noncritical</span>');
+            if (alarmCounts[4] > 0) alarmSummary.push('<span class="status-unrecoverable">' + alarmCounts[4] + ' Unrecoverable</span>');
+            if (alarmCounts[1] > 0) alarmSummary.push('<span class="status-ok">' + alarmCounts[1] + ' OK</span>');
+            if (alarmCounts.other > 0) alarmSummary.push('<span class="status-other">' + alarmCounts.other + ' Other</span>');
+
+            // Alarms section header
+            html += '<div class="alarm-section-header">';
+            html += '<strong>ALARMS</strong> <span class="status-summary">' + alarmSummary.join(' | ') + '</span>';
+            html += '</div>';
+
+            // Alarms section tables (one per alarm)
+            $.each(alarmDataArray, function(idx, alarmData) {
+                if (!alarmData || !Array.isArray(alarmData.changes)) return;
+
+                // Alarm table header
+                html += '<table class="alarm-file-table tablesorter"><thead>';
+                html += '<tr class="alarm-file-header"><th colspan="10">';
+                html += '<strong>Change Detected:</strong> ' + safe(alarmData.detected_at) + ' ' + getTimeAgo(alarmData.detected_at, false);
+                html += '</th></tr>';
+                html += '<tr>';
+                html += '<th>Element ID</th><th>Description</th><th>Before Status</th><th>Before Desc</th><th>Before Flags</th>';
+                html += '<th>Before Extra</th><th>After Status</th><th>After Desc</th><th>After Flags</th><th>After Extra</th></tr>';
+                html += '</thead><tbody>';
+
+                // Alarm table rows (one per change)
+                $.each(alarmData.changes, function(changeIdx, change) {
+                    if (!change) return;
+
+                    var before = change.before || {};
+                    var after  = change.after  || {};
+
+                    var before_extra = [];
+                    if (before.temperature) before_extra.push('Temp: ' + before.temperature);
+                    if (before.voltage) before_extra.push('Volt: ' + before.voltage + 'V');
+                    if (before.amperage) before_extra.push('Amp: ' + before.amperage + 'A');
+
+                    var after_extra = [];
+                    if (after.temperature) after_extra.push('Temp: ' + after.temperature);
+                    if (after.voltage) after_extra.push('Volt: ' + after.voltage + 'V');
+                    if (after.amperage) after_extra.push('Amp: ' + after.amperage + 'A');
+
+                    html += '<tr class="alarm-change-row">';
+                    html += '<td>' + safe(change.id) + '</td><td>' + safe(change.element_type_desc) + '</td>';
+                    html += '<td>' + safe(before.status) + '</td>';
+                    html += '<td class="' + getStatusClass(before.status) + '">' + safe(before.status_desc) + '</td>';
+                    html += '<td>P:' + safe(before.prdfail) + ' D:' + safe(before.disabled) + ' S:' + safe(before.swap) + '</td>';
+                    html += '<td>' + before_extra.join(', ') + '</td>';
+                    html += '<td>' + safe(after.status) + '</td>';
+                    html += '<td class="' + getStatusClass(after.status) + '">' + safe(after.status_desc) + '</td>';
+                    html += '<td>P:' + safe(after.prdfail) + ' D:' + safe(after.disabled) + ' S:' + safe(after.swap) + '</td>';
+                    html += '<td>' + after_extra.join(', ') + '</td>';
+                    html += '</tr>';
+                });
+
+                html += '</tbody></table>';
+            });
+        }
+
+        // Elements section status counts
+        var elementSummary = [];
+        if (statusCounts[2] > 0) elementSummary.push('<span class="status-critical">' + statusCounts[2] + ' Critical</span>');
+        if (statusCounts[3] > 0) elementSummary.push('<span class="status-noncritical">' + statusCounts[3] + ' Noncritical</span>');
+        if (statusCounts[4] > 0) elementSummary.push('<span class="status-unrecoverable">' + statusCounts[4] + ' Unrecoverable</span>');
+        if (statusCounts[1] > 0) elementSummary.push('<span class="status-ok">' + statusCounts[1] + ' OK</span>');
+        if (statusCounts.other > 0) elementSummary.push('<span class="status-other">' + statusCounts.other + ' Other</span>');
+
+        // Elements sections header
+        html += '<div class="elements-section-header">';
+        html += '<strong>ELEMENTS</strong> <span class="status-summary">' + elementSummary.join(' | ') + '</span>';
+        html += '</div>';
+
+        // Elements table
+        html += '<table class="elements-table tablesorter"><thead>';
+
+        // Elements table header
+        html += '<tr>';
+        html += '<th>Element ID</th><th>Description</th><th>Status</th><th>Status Desc</th>';
+        html += '<th>Prdfail</th><th>Disabled</th><th>Swap</th><th>Extra</th></tr>';
+        html += '</thead><tbody>';
+
+        // Elements table rows
+        var sortedKeys = Object.keys(data.raw).sort(sortElementId);
+        $.each(sortedKeys, function(index, elementId) {
+            var element = data.raw[elementId];
+            if (!element) return;
+
+            var extra = [];
+            if (element.temperature) extra.push('Temp: ' + element.temperature);
+            if (element.voltage) extra.push('Volt: ' + element.voltage + 'V');
+            if (element.amperage) extra.push('Amp: ' + element.amperage + 'A');
+
+            html += '<tr><td>' + safe(elementId) + '</td><td>' + safe(element.element_type_desc) + '</td>';
+            html += '<td>' + safe(element.status) + '</td>';
+            html += '<td class="' + getStatusClass(element.status) + '">' + safe(element.status_desc) + '</td>';
+            html += '<td>' + safe(element.prdfail) + '</td><td>' + safe(element.disabled) + '</td><td>' + safe(element.swap) + '</td>';
+            html += '<td>' + extra.join(', ') + '</td></tr>';
+        });
+
+        html += '</tbody></table></div><br>';
+
+        $(targetContainer).append(html);
+    }
+
+    let openDeviceIds = {};
+
+    async function loadData() {
+        const cacheBust = `?v=${Date.now()}`;
+        const basePath = '/plugins/dwsesmon/json';
+        const newContent = $('<div/>');
+
+        $('[data-toggle-id]').each(function() {
+            const targetId = '#' + $(this).data('toggle-id');
+            if ($(targetId).is(':visible')) {
+                openDeviceIds[targetId] = true;
+            }
+        });
+
+        let res;
+        try {
+            res = await fetch(`/plugins/dwsesmon/include/dwses_list.php${cacheBust}`);
+        } catch (e) {
+            console.error('Failed to load folder list:', e);
+            return;
+        }
+        if (!res.ok) {
+            console.error('Failed to load folder list:', res.status, res.statusText);
+            return;
+        }
+        const folders = await res.json();
+
+        const folderArray = [];
+        $.each(folders, function(folderName, folderData) {
+            if (folderData.parsed) {
+                folderArray.push({ folderName: folderName, folderData: folderData });
+            }
+        });
+        if (folderArray.length === 0) {
+            return;
+        }
+
+        const devicePromises = folderArray.map(async ({ folderName, folderData }) => {
+            // Device data
+            let deviceRes;
+            try {
+                deviceRes = await fetch(`${basePath}/${folderName}/${folderData.parsed}${cacheBust}`);
+            } catch (e) {
+                console.error(`Failed to load device data for ${folderName}:`, e);
+                return;
+            }
+            if (!deviceRes.ok) {
+                console.error(`Failed to load device data for ${folderName}:`, deviceRes.status, deviceRes.statusText);
+                return;
+            }
+            const data = await deviceRes.json();
+
+            // Device alarms data
+            const alerts = folderData.alerts || [];
+            let alarmDataArray = [];
+
+            if (alerts.length > 0) {
+                const alarmPromises = alerts.map(async (alertFile) => {
+                    try {
+                        const alarmRes = await fetch(`${basePath}/${folderName}/${alertFile}${cacheBust}`);
+                        if (!alarmRes.ok) {
+                            throw new Error(alarmRes.statusText || 'Alarm fetch failed');
+                        }
+                        return await alarmRes.json();
+                    } catch (e) {
+                        console.warn(`Failed to load alarm ${alertFile} for ${folderName}:`, e);
+                        return null;
+                    }
+                });
+
+                const alarmResults = await Promise.all(alarmPromises);
+                alarmDataArray = alarmResults.filter(a => a !== null);
+            }
+
+            return { folderName, data, alarmDataArray };
+        });
+
+        const results = (await Promise.all(devicePromises)).filter(r => r);
+
+        results.sort(function(a, b) {
+            return a.folderName.localeCompare(b.folderName, 'en', {
+                numeric: true,
+                sensitivity: 'base'
+            });
+        });
+
+        results.forEach(result => {
+            buildDevice(result.folderName, result.data, result.alarmDataArray, newContent);
+        });
+
+        $('#content').html(newContent.html());
+
+        $('.device-content').each(function() {
+            const id = '#' + this.id;
+            if (openDeviceIds[id]) {
+                $(this).show();
+                toggleChevron(id);
+                delete openDeviceIds[id];
+            } else {
+                $(this).hide();
+                toggleChevron(id);
+            }
+        });
+
+        openDeviceIds = {};
+    }
+
+    $(document).ready(function() {
+        loadData();
+        timers.loadData = setInterval(loadData, 15000);
+
+        $(document).on('click', '[data-toggle-id]', function() {
+            var targetId = '#' + $(this).data('toggle-id');
+            $(targetId).toggle();
+            toggleChevron(targetId);
+        });
+    });
+</script>
