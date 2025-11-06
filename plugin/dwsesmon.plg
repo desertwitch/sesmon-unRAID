@@ -19,7 +19,7 @@
 <CHANGES>
 ## SCSI Enclosure Monitor for UNRAID
 ###2025.11.05
-- release note: welcome to the first version of the sesmon package.
+- release note: welcome to the first version of the package.
 - release note: please report any problems in the support topic.
 </CHANGES>
 
@@ -88,8 +88,9 @@ fi
 
 removepkg &plgPATH;/*.txz
 rm -f &plgPATH;/*.txz
-rm -rf /etc/sesmon
 rm -rf &emhttp;
+rm -rf /etc/sesmon
+rm -rf /var/lib/sesmon
 
 echo ""
 echo "-----------------------------------------------------------"
