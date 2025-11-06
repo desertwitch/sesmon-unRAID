@@ -195,9 +195,16 @@ function dwsesDashboards() {
                     });
                 }
 
-                $('#' + folderName + '-header').html(
-                    'Last updated: ' + (data.captured_at || 'Unknown') + ' ' + dwsesTimeAgo(data.captured_at, true)
-                );
+                if (statusCounts.alarms > 0) {
+                    $('#' + folderName + '-header').html(
+                        '<span style="font-weight:bold;color:red;">' + statusCounts.alarms + ' Alarm' + (statusCounts.alarms > 1 ? 's' : '') + '</span> ' +
+                        '| Last updated: ' + (data.captured_at || 'Unknown') + ' ' + dwsesTimeAgo(data.captured_at, true)
+                    );
+                } else {
+                    $('#' + folderName + '-header').html(
+                        'Last updated: ' + (data.captured_at || 'Unknown') + ' ' + dwsesTimeAgo(data.captured_at, true)
+                    );
+                }
 
                 $('#' + folderName + '-body').html(
                     '<td>' +
