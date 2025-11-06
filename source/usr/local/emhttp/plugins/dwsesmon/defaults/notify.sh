@@ -4,8 +4,6 @@
 SES_DEV_PATH="$1"
 SES_DEV_ADDR="$2"
 SES_DEV_DESCR="$3"
-# We need to replace '=' with ':' because of Unraid OS's
-# notification system breaking with messages containing '='
 SES_ALARM_MSG="${4//=/\:}"
 SES_ALARM_JSON="$5"
 
