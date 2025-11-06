@@ -1,32 +1,46 @@
 Menu="Buttons:195"
 Link="nav-user"
 ---
-<?php
+<?
+/* Copyright Derek Macias (parts of code from NUT package)
+ * Copyright macester (parts of code from NUT package)
+ * Copyright gfjardim (parts of code from NUT package)
+ * Copyright SimonF (parts of code from NUT package)
+ * Copyright Dan Landon (parts of code from Web GUI)
+ * Copyright Bergware International (parts of code from Web GUI)
+ * Copyright Lime Technology (any and all other parts of Unraid)
+ *
+ * Copyright desertwitch (as author and maintainer of this file)
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License 2
+ * as published by the Free Software Foundation.
+ *
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ */
+require_once '/usr/local/emhttp/plugins/dwsesmon/include/dwses_helpers.php';
+
 try {
-    $sesmon_dir = '/var/lib/sesmon';
-    $sesmon_subdirs = array_filter(glob($sesmon_dir . '/*'), 'is_dir');
+    $sesmon_devices = dwses_device_folders();
 
-    foreach ($sesmon_subdirs as $sesmon_subdir) {
-        $sesmon_folder_name = basename($sesmon_subdir);
-        $sesmon_folder_json = [];
-
+    foreach ($sesmon_devices as $sesmon_folder_name => $sesmon_folder_data) {
         $sesmon_tile_name = "dwsesmon-" . $sesmon_folder_name;
-        $sesmon_tile_text = "";
 
-        foreach (scandir($sesmon_subdir) as $sesmon_file) {
-            if ($sesmon_file === '.' || $sesmon_file === '..') continue;
-
-            if ($sesmon_file === 'current_parsed.json') {
-                $sesmon_folder_json = json_decode(file_get_contents($sesmon_subdir . '/' . $sesmon_file), true);
-                if (json_last_error() !== JSON_ERROR_NONE) {
-                    $sesmon_folder_json = [];
-                }
+        $sesmon_folder_parsed = [];
+        if ($sesmon_folder_data['parsed']) {
+            $sesmon_subdir = '/var/lib/sesmon/' . $sesmon_folder_name;
+            $sesmon_folder_parsed = json_decode(file_get_contents($sesmon_subdir . '/' . $sesmon_folder_data['parsed']), true);
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                $sesmon_folder_parsed = [];
             }
         }
 
-        $sesmon_device_path = $sesmon_folder_json['device']['path'] ?? '';
-        $sesmon_device_description = $sesmon_folder_json['device']['description'] ?? '';
+        $sesmon_device_path = $sesmon_folder_parsed['device']['path'] ?? '';
+        $sesmon_device_description = $sesmon_folder_parsed['device']['description'] ?? '';
 
+        $sesmon_tile_text = "";
         if($sesmon_device_description) {
             $sesmon_tile_text = $sesmon_device_description;
         } else {
@@ -117,8 +131,8 @@ try {
     EOT;
             }
     }
-} catch (\Exception $e) {
-    error_log($e);
+} catch (\Throwable $t) {
+    error_log($t);
 }
 ?>
 

@@ -23,7 +23,6 @@ Markdown="false"
  *
  */
 require_once '/usr/local/emhttp/plugins/dwsesmon/include/dwses_config.php';
-require_once '/usr/local/emhttp/plugins/dwsesmon/include/dwses_helpers.php';
 
 $lastStartFailed = false;
 if (file_exists('/usr/local/emhttp/plugins/dwsesmon/start-failed')) {

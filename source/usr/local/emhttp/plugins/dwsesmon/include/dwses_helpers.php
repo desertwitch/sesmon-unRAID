@@ -17,4 +17,50 @@
  * included in all copies or substantial portions of the Software.
  *
  */
+function dwses_device_folders() {
+    $result = [];
+    $baseDir = '/var/lib/sesmon';
+
+    try {
+        $subdirs = array_filter(glob($baseDir . '/*'), 'is_dir');
+        sort($subdirs);
+
+        foreach ($subdirs as $subdir) {
+            $folderName = basename($subdir);
+            $folderData = [
+                'raw' => null,
+                'parsed' => null,
+                'alerts' => []
+            ];
+
+            $files = scandir($subdir);
+            $found = false;
+
+            foreach ($files as $file) {
+                if ($file === '.' || $file === '..') continue;
+
+                if ($file === 'current.json') {
+                    $folderData['raw'] = $file;
+                } elseif ($file === 'current_parsed.json') {
+                    $found = true; // Need at least this file
+                    $folderData['parsed'] = $file;
+                } elseif (strpos($file, 'change-') === 0) {
+                    $folderData['alerts'][] = $file;
+                }
+            }
+            if (!$found) {
+                continue;
+            }
+
+            rsort($folderData['alerts']);
+
+            $result[$folderName] = $folderData;
+        }
+    } catch (\Throwable $t) {
+        error_log($t);
+        $result = [];
+    }
+
+    return $result;
+}
 ?>
