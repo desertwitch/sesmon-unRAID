@@ -72,17 +72,17 @@ if (file_exists('/usr/local/emhttp/plugins/dwsesmon/start-failed')) {
     <dl>
         <dt>
             <span>
-                <input id="CLEARDEVICES" class="dwses-tip" type="button" value="Clear Devices" title="Clear all devices from the dashboard (until next poll)">
-                <input id="CLEARALARMS" class="dwses-tip" type="button" value="Clear Alarms" title="Clear all alarms from the dashboard (until next alarm">
-                <input id="RESETCONF" class="dwses-run dwses-tip" type="button" value="Reset Config" title="Reverts the whole configuration to its default state, including the program configuration.">
+                <input id="CLEARALARMS" class="dwses-tip" type="button" value="Clear Alarms" title="Clear all alarms from the dashboard (until the next alarm populates it again).">
+                <input id="CLEARDEVICES" class="dwses-tip" type="button" value="Clear Devices" title="Clear all devices from the dashboard (until next poll populates it again).">
+                <input id="RESETCONF" class="dwses-run dwses-tip" type="button" value="Reset Config" title="Revert the whole configuration to its default state, including the program configuration.">
             </span>
         </dt>
         <dd>
             <span>
                 <input type="submit" id="btnApply" name="#apply" value="Apply">
                 <input type="button" value="Done" onclick="done()">
-                <input id="DEFAULT" type="submit" class="dwses-run dwses-tip" name="#default" value="Default" title="Reverts the displayed settings to their default values, but not the program configuration.">
-                <input type="button" class="dwses-notrun dwses-tip" id="RESTART" value="Restart">
+                <input id="DEFAULT" type="submit" class="dwses-run dwses-tip" name="#default" value="Default" title="Revert the displayed settings to their default values, but not the program configuration.">
+                <input type="button" class="dwses-notrun dwses-tip" id="RESTART" value="Restart" title="Restart the service.">
             </span>
         </dd>
     </dl>

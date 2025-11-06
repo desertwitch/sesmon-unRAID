@@ -360,6 +360,7 @@ Markdown="false"
             }
         });
         if (folderArray.length === 0) {
+            $('#content').html("<i>There are currently no enclosure device reports available.</i>");
             return;
         }
 
