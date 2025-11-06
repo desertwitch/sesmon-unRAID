@@ -23,44 +23,44 @@ Link="nav-user"
 require_once '/usr/local/emhttp/plugins/dwsesmon/include/dwses_helpers.php';
 
 try {
-    foreach (dwses_device_folders() as $sesmon_folder_name => $sesmon_folder_data) {
-        $sesmon_tile_name = "dwsesmon-" . $sesmon_folder_name;
+    foreach (dwses_device_folders() as $dwses_folder_name => $dwses_folder_data) {
+        $dwses_tile_name = "dwsesmon-" . $dwses_folder_name;
 
-        $sesmon_folder_parsed = [];
-        if ($sesmon_folder_data['parsed']) {
-            $sesmon_subdir = '/var/lib/sesmon/' . $sesmon_folder_name;
-            $sesmon_folder_parsed = json_decode(file_get_contents($sesmon_subdir . '/' . $sesmon_folder_data['parsed']), true);
+        $dwses_folder_parsed = [];
+        if ($dwses_folder_data['parsed']) {
+            $dwses_subdir = '/var/lib/sesmon/' . $dwses_folder_name;
+            $dwses_folder_parsed = json_decode(file_get_contents($dwses_subdir . '/' . $dwses_folder_data['parsed']), true);
             if (json_last_error() !== JSON_ERROR_NONE) {
-                $sesmon_folder_parsed = [];
+                $dwses_folder_parsed = [];
             }
         } else {
             continue;
         }
 
-        $sesmon_device_description = $sesmon_folder_parsed['device']['description'] ?? '';
+        $dwses_device_description = $dwses_folder_parsed['device']['description'] ?? '';
 
-        $sesmon_tile_text = "";
-        if($sesmon_device_description) {
-            $sesmon_tile_text = $sesmon_device_description;
+        $dwses_tile_text = "";
+        if($dwses_device_description) {
+            $dwses_tile_text = $dwses_device_description;
         } else {
-            $sesmon_tile_text = $sesmon_folder_name;
+            $dwses_tile_text = $dwses_folder_name;
         }
 
         if(version_compare(parse_ini_file('/etc/unraid-version')['version'],'7.1.99', '>')) {
             // -------------------------------------------------------------
             // RESPONSIVE DASHBOARD
             // -------------------------------------------------------------
-            $mytiles[$sesmon_tile_name]['column2'] =
+            $mytiles[$dwses_tile_name]['column2'] =
             <<<EOT
-            <tbody id="{$sesmon_tile_name}" title="SCSI Enclosure: {$sesmon_folder_name}">
+            <tbody id="{$dwses_tile_name}" title="SCSI Enclosure: {$dwses_folder_name}">
                 <tr>
                     <td>
                         <span class='tile-header'>
                             <span class='tile-header-left'>
                                 <i class='fa fa-server f32'></i>
                                 <div class='section'>
-                                    <h3 class='tile-header-main'>SCSI Enclosure: {$sesmon_tile_text}</h3>
-                                    <span id='{$sesmon_folder_name}-header'>
+                                    <h3 class='tile-header-main'>SCSI Enclosure: {$dwses_tile_text}</h3>
+                                    <span id='{$dwses_folder_name}-header'>
                                         <i class="fa fa-spinner fa-spin"></i> <em>Please wait, retrieving information...</em>
                                     </span>
                                 </div>
@@ -85,7 +85,7 @@ try {
                         <span class='w18'>Operational</span>
                     </td>
                 </tr>
-                <tr id='{$sesmon_folder_name}-body'>
+                <tr id='{$dwses_folder_name}-body'>
                     <td style="text-align:center;">
                         <i class="fa fa-spinner fa-spin"></i> <em>Please wait, retrieving information...</em>
                     </td>
@@ -96,14 +96,14 @@ try {
             // -------------------------------------------------------------
             // NON-RESPONSIVE DASHBOARD
             // -------------------------------------------------------------
-            $mytiles[$sesmon_tile_name]['column2'] = <<<EOT
-            <tbody id="{$sesmon_tile_name}" title="SCSI Enclosure: {$sesmon_folder_name}">
+            $mytiles[$dwses_tile_name]['column2'] = <<<EOT
+            <tbody id="{$dwses_tile_name}" title="SCSI Enclosure: {$dwses_folder_name}">
                 <tr>
                     <td>
                         <i class="fa fa-server f32"></i>
                         <div class="section">
-                            SCSI Enclosure: {$sesmon_tile_text}<br>
-                            <span id='{$sesmon_folder_name}-header'>
+                            SCSI Enclosure: {$dwses_tile_text}<br>
+                            <span id='{$dwses_folder_name}-header'>
                                 <i class="fa fa-spinner fa-spin"></i> <em>Please wait, retrieving information...</em>
                             </span>
                         </div>
@@ -121,7 +121,7 @@ try {
                         <span class='w18'>Operational</span>
                     </td>
                 </tr>
-                <tr id='{$sesmon_folder_name}-body'>
+                <tr id='{$dwses_folder_name}-body'>
                     <td style="text-align:center;">
                         <i class="fa fa-spinner fa-spin"></i> <em>Please wait, retrieving information...</em>
                     </td>
