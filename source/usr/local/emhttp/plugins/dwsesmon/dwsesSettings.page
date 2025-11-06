@@ -89,7 +89,7 @@ if (file_exists('/usr/local/emhttp/plugins/dwsesmon/start-failed')) {
                 <input type="submit" id="btnApply" name="#apply" value="Apply">
                 <input type="button" value="Done" onclick="done()">
                 <input id="DEFAULT" type="submit" class="dwses-run dwses-tip" name="#default" value="Default" title="Revert the displayed settings to their default values, but not the program configuration.">
-                <input type="button" class="dwses-notrun dwses-tip" id="RESTART" value="Restart" title="Restart the service.">
+                <input type="button" class="dwses-notrun dwses-tip" id="RESTART" value="Restart Service" title="Restart the service.">
             </span>
         </dd>
     </dl>
