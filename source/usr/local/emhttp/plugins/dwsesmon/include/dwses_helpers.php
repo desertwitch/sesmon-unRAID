@@ -42,8 +42,8 @@ function dwses_device_folders() {
                 if ($file === 'current.json') {
                     $folderData['raw'] = $file;
                 } elseif ($file === 'current_parsed.json') {
-                    $found = true; // Need at least this file
                     $folderData['parsed'] = $file;
+                    $found = true; // Need at least this file
                 } elseif (strpos($file, 'change-') === 0) {
                     $folderData['alerts'][] = $file;
                 }

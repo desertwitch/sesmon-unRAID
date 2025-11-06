@@ -23,9 +23,7 @@ Link="nav-user"
 require_once '/usr/local/emhttp/plugins/dwsesmon/include/dwses_helpers.php';
 
 try {
-    $sesmon_devices = dwses_device_folders();
-
-    foreach ($sesmon_devices as $sesmon_folder_name => $sesmon_folder_data) {
+    foreach (dwses_device_folders() as $sesmon_folder_name => $sesmon_folder_data) {
         $sesmon_tile_name = "dwsesmon-" . $sesmon_folder_name;
 
         $sesmon_folder_parsed = [];
@@ -35,9 +33,10 @@ try {
             if (json_last_error() !== JSON_ERROR_NONE) {
                 $sesmon_folder_parsed = [];
             }
+        } else {
+            continue;
         }
 
-        $sesmon_device_path = $sesmon_folder_parsed['device']['path'] ?? '';
         $sesmon_device_description = $sesmon_folder_parsed['device']['description'] ?? '';
 
         $sesmon_tile_text = "";
