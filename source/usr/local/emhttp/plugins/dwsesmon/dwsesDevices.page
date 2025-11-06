@@ -212,7 +212,7 @@ Markdown="false"
         html += '<div class="device-section-header" data-toggle-id="' + deviceContentId + '" style="cursor: pointer;">';
         html += '<i class="fa fa-chevron-right" id="'+ deviceContentId +'-chevron"></i> ';
         html += '' + folderName + ' - ' + safe(data.device.description) + ' ';
-        html += '(' + (safe(data.device.address) || 'N/A') + ') - ';
+        html += '(' + safe(data.device.path) + ':' + safe(data.device.address) + ') - ';
         html += 'Updated: ' + safe(data.captured_at) + ' ' + getTimeAgo(data.captured_at, true) + alarmTimeHtml;
         html += '<span class="status-summary">' + deviceSummary.join(' | ') + '</span>';
         html += '</div>';
