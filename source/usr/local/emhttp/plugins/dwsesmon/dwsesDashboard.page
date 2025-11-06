@@ -1,0 +1,223 @@
+Menu="Buttons:195"
+Link="nav-user"
+---
+<?php
+$sesmon = [];
+try {
+    $sesmon_dir = '/var/lib/sesmon';
+    $sesmon_subdirs = array_filter(glob($sesmon_dir . '/*'), 'is_dir');
+
+    foreach ($sesmon_subdirs as $sesmon_subdir) {
+        $sesmon_folder_name = basename($sesmon_subdir);
+        $sesmon_folder_data = [
+            'raw' => null,
+            'parsed' => null,
+            'alerts' => []
+        ];
+
+        $sesmon_files = scandir($sesmon_subdir);
+
+        foreach ($sesmon_files as $sesmon_file) {
+            if ($sesmon_file === '.' || $sesmon_file === '..') continue;
+
+            if ($sesmon_file === 'current.json') {
+                $sesmon_folder_data['raw'] = $sesmon_file;
+            } elseif ($sesmon_file === 'current_parsed.json') {
+                $sesmon_folder_data['parsed'] = $sesmon_file;
+            } elseif (strpos($sesmon_file, 'change-') === 0) {
+                $sesmon_folder_data['alerts'][] = $sesmon_file;
+            }
+        }
+
+        rsort($sesmon_folder_data['alerts']);
+        $sesmon[$sesmon_folder_name] = $sesmon_folder_data;
+        $tile_name = "dwsesmon-" . $sesmon_folder_name;
+
+        if(version_compare(parse_ini_file('/etc/unraid-version')['version'],'7.1.99', '>')) {
+            // -------------------------------------------------------------
+            // RESPONSIVE DASHBOARD
+            // -------------------------------------------------------------
+            $mytiles[$tile_name]['column2'] =
+            <<<EOT
+            <tbody id="{$tile_name}" title="SCSI Enclosure: {$sesmon_folder_name}">
+                <tr>
+                    <td>
+                        <span class='tile-header'>
+                            <span class='tile-header-left'>
+                                <i class='fa fa-server f32'></i>
+                                <div class='section'>
+                                    <h3 class='tile-header-main'>SCSI Enclosure: {$sesmon_folder_name}</h3>
+                                    <span id='{$sesmon_folder_name}-header'>
+                                        <i class="fa fa-spinner fa-spin"></i> <em>Please wait, retrieving information...</em>
+                                    </span>
+                                </div>
+                            </span>
+                            <span class='tile-header-right'>
+                                <span class='tile-ctrl'></span>
+                                <span class='tile-header-right-controls'>
+                                <a href='/Settings/dwses' title='_(Go to SCSI Enclosure Monitor Settings)_'>
+                                    <i class='fa fa-fw fa-cog control'></i>
+                                </a>
+                                </span>
+                            </span>
+                        </span>
+                    </td>
+                </tr>
+                <tr class='header'>
+                    <td>
+                        <span class='w18'>Alarms</span>
+                        <span class='w18'>Critical</span>
+                        <span class='w18'>Non-Crit.</span>
+                        <span class='w26'>Unrecoverable</span>
+                        <span class='w18'>Operational</span>
+                    </td>
+                </tr>
+                <tr id='{$sesmon_folder_name}-body'>
+                    <td style="text-align:center;">
+                        <i class="fa fa-spinner fa-spin"></i> <em>Please wait, retrieving information...</em>
+                    </td>
+                </tr>
+            </tbody>
+    EOT;
+            } else {
+            // -------------------------------------------------------------
+            // NON-RESPONSIVE DASHBOARD
+            // -------------------------------------------------------------
+            $mytiles[$tile_name]['column2'] = <<<EOT
+            <tbody id="{$tile_name}" title="SCSI Enclosure: {$sesmon_folder_name}">
+                <tr>
+                    <td>
+                        <i class="fa fa-server f32"></i>
+                        <div class="section">
+                            SCSI Enclosure: {$sesmon_folder_name}<br>
+                            <span id='{$sesmon_folder_name}-header'>
+                                <i class="fa fa-spinner fa-spin"></i> <em>Please wait, retrieving information...</em>
+                            </span>
+                        </div>
+                        <a href='/Settings/dwses' title="_(Go to SCSI Enclosure Monitor Settings)_">
+                            <i class='fa fa-fw fa-cog control'></i>
+                        </a>
+                    </td>
+                </tr>
+                <tr class='header'>
+                    <td>
+                        <span class='w18'>Alarms</span>
+                        <span class='w18'>Critical</span>
+                        <span class='w18'>Non-Crit.</span>
+                        <span class='w26'>Unrecoverable</span>
+                        <span class='w18'>Operational</span>
+                    </td>
+                </tr>
+                <tr id='{$sesmon_folder_name}-body'>
+                    <td style="text-align:center;">
+                        <i class="fa fa-spinner fa-spin"></i> <em>Please wait, retrieving information...</em>
+                    </td>
+                </tr>
+            </tbody>
+    EOT;
+            }
+    }
+} catch (\Exception $e) {
+    error_log($e);
+    $sesmon = [];
+}
+?>
+
+<script>
+var dwsesData = <?php echo json_encode($sesmon); ?>;
+
+function dwsesFormatCount(count, color) {
+    if (count > 0) {
+        return '<span style="color:' + color + ';">' + count + '</span>';
+    }
+    return count;
+}
+
+function dwsesTimeAgo(timestamp, withColor) {
+    if (timestamp == undefined || timestamp == null) return '';
+
+    var then = new Date(timestamp);
+    if (isNaN(then.getTime())) {
+        return '';
+    }
+
+    var now = new Date();
+    var diffMs = now - then;
+    var diffMins = Math.floor(diffMs / 60000);
+
+    var isStale = diffMins > 10;
+    var timeClass = isStale ? 'red-text' : 'green-text';
+
+    var timeText = '';
+    if (diffMins < 1) {
+        timeText = 'just now';
+    } else if (diffMins < 60) {
+        timeText = diffMins + ' min ago';
+    } else {
+        var hours = Math.floor(diffMins / 60);
+        timeText = hours + ' hour' + (hours > 1 ? 's' : '') + ' ago';
+    }
+
+    if (withColor) {
+        return '<span class="' + timeClass + '">(' + timeText + ')</span>';
+    } else {
+        return '<span>(' + timeText + ')</span>';
+    }
+}
+
+function dwsesDashboards() {
+    var basePath = '/plugins/dwsesmon/json';
+    var cacheBust = '?v=' + Date.now();
+
+    $.each(dwsesData, function(folderName, folderData) {
+        if (!folderData.parsed) return;
+
+        $.getJSON(basePath + '/' + folderName + '/' + folderData.parsed + cacheBust)
+            .done(function(data) {
+                var statusCounts = {
+                    alarms: folderData.alerts.length,
+                    critical: 0,      // status 2
+                    noncritical: 0,   // status 3
+                    unrecoverable: 0, // status 4
+                    ok: 0            // status 1
+                };
+
+                if (data.raw) {
+                    $.each(data.raw, function(elementId, element) {
+                        if (!element || element.status === undefined) return;
+
+                        var status = Number(element.status);
+
+                        if (status === 2) statusCounts.critical++;
+                        else if (status === 3) statusCounts.noncritical++;
+                        else if (status === 4) statusCounts.unrecoverable++;
+                        else if (status === 1) statusCounts.ok++;
+                    });
+                }
+
+                $('#' + folderName + '-header').html(
+                    'Last updated: ' + (data.captured_at || 'Unknown') + ' ' + dwsesTimeAgo(data.captured_at, true)
+                );
+
+                $('#' + folderName + '-body').html(
+                    '<td>' +
+                        '<span class="w18">' + dwsesFormatCount(statusCounts.alarms, 'red') + '</span>' +
+                        '<span class="w18">' + dwsesFormatCount(statusCounts.critical, 'red') + '</span>' +
+                        '<span class="w18">' + dwsesFormatCount(statusCounts.noncritical, 'orange') + '</span>' +
+                        '<span class="w26">' + dwsesFormatCount(statusCounts.unrecoverable, 'darkred') + '</span>' +
+                        '<span class="w18">' + dwsesFormatCount(statusCounts.ok, 'green') + '</span>' +
+                    '</td>'
+                );
+            })
+            .fail(function(jqXHR, textStatus, errorThrown) {
+                console.error('Failed to update dashboard for ' + folderName + ':', textStatus, errorThrown);
+            });
+    });
+}
+
+$(function() {
+    dwsesDashboards();
+    timers.dwsesDashboards = setInterval(dwsesDashboards, 15000);
+});
+</script>
+

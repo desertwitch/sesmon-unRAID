@@ -38,7 +38,7 @@ killall sesmon >/dev/null 2>&amp;1
 if [ -x /etc/rc.d/rc.sesmon ]; then
     if ! /etc/rc.d/rc.sesmon stop >/dev/null 2>&amp;1; then
         echo "WARNING:"
-        echo "WARNING: The sesmon installation script was not able to stop the sesmon service."
+        echo "WARNING: The installation script was not able to stop the service."
         echo "WARNING: IN CASE OF PROBLEMS, please REBOOT YOUR SYSTEM to complete any upgrades."
         echo "WARNING:"
     fi
@@ -51,12 +51,12 @@ fi
 if [ -x /etc/rc.d/rc.sesmon ]; then
     source "/boot/config/plugins/dwsesmon/dwsesmon.cfg"
     if [ "$SERVICE" == "enable" ]; then
-        echo "Starting sesmon service..."
+        echo "Starting service..."
         /etc/rc.d/rc.sesmon start 2>&amp;1 | logger -t "rc.sesmon"
         if [ "${PIPESTATUS[0]}" -eq 0 ]; then
-            echo "sesmon service has been started successfully."
+            echo "Service has been started successfully."
         else
-            echo "WARNING: sesmon service failed to start, check your configuration and the SYSLOG."
+            echo "WARNING: Service failed to start, check your configuration and the SYSLOG."
         fi
     fi
 fi
@@ -80,7 +80,7 @@ killall sesmon >/dev/null 2>&amp;1
 if [ -x /etc/rc.d/rc.sesmon ]; then
     if ! /etc/rc.d/rc.sesmon stop >/dev/null 2>&amp;1; then
         echo "WARNING:"
-        echo "WARNING: The sesmon uninstallation script was not able to stop the sesmon service."
+        echo "WARNING: The uninstallation script was not able to stop the service."
         echo "WARNING: IN CASE OF PROBLEMS, please REBOOT YOUR SYSTEM to remove any remaining packages."
         echo "WARNING:"
     fi
