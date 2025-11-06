@@ -80,9 +80,9 @@ try {
                     <td>
                         <span class='w18'>Alarms</span>
                         <span class='w18'>Critical</span>
-                        <span class='w18'>Non-Crit.</span>
+                        <span class='w18'>Non-Critical</span>
                         <span class='w26'>Unrecoverable</span>
-                        <span class='w18'>Operational</span>
+                        <span class='w18'>In Range (OK)</span>
                     </td>
                 </tr>
                 <tr id='{$dwses_folder_name}-body'>
@@ -116,9 +116,9 @@ try {
                     <td>
                         <span class='w18'>Alarms</span>
                         <span class='w18'>Critical</span>
-                        <span class='w18'>Non-Crit.</span>
+                        <span class='w18'>Non-Critical</span>
                         <span class='w26'>Unrecoverable</span>
-                        <span class='w18'>Operational</span>
+                        <span class='w18'>In Range (OK)</span>
                     </td>
                 </tr>
                 <tr id='{$dwses_folder_name}-body'>
@@ -138,7 +138,7 @@ try {
 <script>
 function dwsesFormatCount(count, color) {
     if (count > 0) {
-        return '<span style="color:' + color + ';">' + count + '</span>';
+        return '<span style="color:' + color + ';font-weight:bold;">' + count + '</span>';
     }
     return count;
 }
@@ -220,11 +220,11 @@ function dwsesDashboards() {
 
                         $('#' + folderName + '-body').html(
                             '<td>' +
-                                '<span class="w18">' + dwsesFormatCount(statusCounts.alarms, 'red') + '</span>' +
-                                '<span class="w18">' + dwsesFormatCount(statusCounts.critical, 'red') + '</span>' +
-                                '<span class="w18">' + dwsesFormatCount(statusCounts.noncritical, 'orange') + '</span>' +
-                                '<span class="w26">' + dwsesFormatCount(statusCounts.unrecoverable, 'darkred') + '</span>' +
-                                '<span class="w18">' + dwsesFormatCount(statusCounts.ok, 'green') + '</span>' +
+                                '<span class="w18">' + dwsesFormatCount(statusCounts.alarms, 'red') + ' Alarms</span>' +
+                                '<span class="w18">' + dwsesFormatCount(statusCounts.critical, 'red') + ' Sensors</span>' +
+                                '<span class="w18">' + dwsesFormatCount(statusCounts.noncritical, 'orange') + ' Sensors</span>' +
+                                '<span class="w26">' + dwsesFormatCount(statusCounts.unrecoverable, 'darkred') + ' Sensors</span>' +
+                                '<span class="w18">' + dwsesFormatCount(statusCounts.ok, 'green') + ' Sensors</span>' +
                             '</td>'
                         );
                     })
