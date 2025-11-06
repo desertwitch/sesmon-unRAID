@@ -50,6 +50,13 @@ if (file_exists('/usr/local/emhttp/plugins/dwsesmon/start-failed')) {
     </dl>
 
     <dl>
+        <dt>Backend Version:</dt>
+        <dd>
+            <strong><?= isset($dwses_version) && $dwses_version ? $dwses_version : "n/a" ?></strong>
+        </dd>
+    </dl>
+
+    <dl>
         <dt><strong>Start Service:</strong></dt>
         <dd>
             <select id="SERVICE" name="SERVICE" size="1">
