@@ -23,6 +23,11 @@
 - release note: please report any problems in the support topic.
 </CHANGES>
 
+<FILE Name="&plgPATH;/sesmon-0.1.0-x86_64-1.txz" Min="7.0" Run="upgradepkg --install-new">
+<URL>&pkgURL;/sesmon-0.1.0-x86_64-1.txz</URL>
+<MD5>1544675bcb5db990723b3b3f979b13b3</MD5>
+</FILE>
+
 <FILE Name="&plgPATH;/&plgNAME;.txz" Min="7.0" Run="upgradepkg --install-new">
 <URL>&gitURL;/archive/&plgNAME;.txz</URL>
 <MD5>&plgMD5;</MD5>
