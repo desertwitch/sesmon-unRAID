@@ -68,11 +68,11 @@ Markdown="false"
 <div id="dwses-content"></div>
 
 <script>
-    function safe(val) {
+    function dwses_safe(val) {
         return (val !== undefined && val !== null) ? val : '';
     }
 
-    function sortElementId(a, b) {
+    function dwses_sortElementId(a, b) {
         var parseId = function(id) {
             var parts = id.split('#');
             return [parseInt(parts[0]), parseInt(parts[1])];
@@ -87,7 +87,7 @@ Markdown="false"
         return aParts[1] - bParts[1];
     }
 
-    function getTimeAgo(timestamp, withColor) {
+    function dwses_getTimeAgo(timestamp, withColor) {
         if (timestamp == undefined || timestamp == null) return '';
 
         var then = new Date(timestamp);
@@ -119,7 +119,7 @@ Markdown="false"
         }
     }
 
-    function getStatusClass(status) {
+    function dwses_getStatusClass(status) {
         if (status == undefined || status == null) return '';
 
         var s = Number(status);
@@ -135,7 +135,7 @@ Markdown="false"
         return '';
     }
 
-    function toggleChevron(targetId) {
+    function dwses_toggleChevron(targetId) {
         var chevronId = targetId + '-chevron';
 
         if ($(targetId).is(':visible')) {
@@ -145,7 +145,7 @@ Markdown="false"
         }
     }
 
-    function buildDevice(folderName, data, alarmDataArray, targetContainer) {
+    function dwses_buildDevice(folderName, data, alarmDataArray, targetContainer) {
         var html = '';
 
         data = data || {};
@@ -205,15 +205,15 @@ Markdown="false"
             alarmDataArray.sort(function(a, b) {
                 return new Date(b.detected_at) - new Date(a.detected_at);
             });
-            alarmTimeHtml = ' - Alarm: ' + alarmDataArray[0].detected_at + ' ' + getTimeAgo(alarmDataArray[0].detected_at, true);
+            alarmTimeHtml = ' - Alarm: ' + alarmDataArray[0].detected_at + ' ' + dwses_getTimeAgo(alarmDataArray[0].detected_at, true);
         }
 
         // Device section header
         html += '<div class="dwses-device-section-header" data-toggle-id="' + deviceContentId + '" style="cursor: pointer;">';
         html += '<i class="fa fa-chevron-right" id="'+ deviceContentId +'-chevron"></i> ';
-        html += (safe(data.device.description) || folderName) + ' ';
-        html += '(' + safe(data.device.path) + ':' + safe(data.device.address) + ') - ';
-        html += 'Updated: ' + safe(data.captured_at) + ' ' + getTimeAgo(data.captured_at, true) + alarmTimeHtml;
+        html += (dwses_safe(data.device.description) || folderName) + ' ';
+        html += '(' + dwses_safe(data.device.path) + ':' + dwses_safe(data.device.address) + ') - ';
+        html += 'Updated: ' + dwses_safe(data.captured_at) + ' ' + dwses_getTimeAgo(data.captured_at, true) + alarmTimeHtml;
         html += '<span class="dwses-status-summary">' + deviceSummary.join(' | ') + '</span>';
         html += '</div>';
 
@@ -240,7 +240,7 @@ Markdown="false"
                 // Alarm table header
                 html += '<table class="dwses-alarm-file-table tablesorter"><thead>';
                 html += '<tr class="dwses-alarm-file-header"><th colspan="10">';
-                html += '<strong>Change Detected:</strong> ' + safe(alarmData.detected_at) + ' ' + getTimeAgo(alarmData.detected_at, false);
+                html += '<strong>Change Detected:</strong> ' + dwses_safe(alarmData.detected_at) + ' ' + dwses_getTimeAgo(alarmData.detected_at, false);
                 html += '</th></tr>';
                 html += '<tr>';
                 html += '<th>Element ID</th><th>Description</th><th>Before Status</th><th>Before Desc</th><th>Before Flags</th>';
@@ -265,14 +265,14 @@ Markdown="false"
                     if (after.amperage) after_extra.push('Amp: ' + after.amperage + 'A');
 
                     html += '<tr class="alarm-change-row">';
-                    html += '<td>' + safe(change.id) + '</td><td>' + safe(change.element_type_desc) + '</td>';
-                    html += '<td>' + safe(before.status) + '</td>';
-                    html += '<td class="' + getStatusClass(before.status) + '">' + safe(before.status_desc) + '</td>';
-                    html += '<td>P:' + safe(before.prdfail) + ' D:' + safe(before.disabled) + ' S:' + safe(before.swap) + '</td>';
+                    html += '<td>' + dwses_safe(change.id) + '</td><td>' + dwses_safe(change.element_type_desc) + '</td>';
+                    html += '<td>' + dwses_safe(before.status) + '</td>';
+                    html += '<td class="' + dwses_getStatusClass(before.status) + '">' + dwses_safe(before.status_desc) + '</td>';
+                    html += '<td>P:' + dwses_safe(before.prdfail) + ' D:' + dwses_safe(before.disabled) + ' S:' + dwses_safe(before.swap) + '</td>';
                     html += '<td>' + before_extra.join(', ') + '</td>';
-                    html += '<td>' + safe(after.status) + '</td>';
-                    html += '<td class="' + getStatusClass(after.status) + '">' + safe(after.status_desc) + '</td>';
-                    html += '<td>P:' + safe(after.prdfail) + ' D:' + safe(after.disabled) + ' S:' + safe(after.swap) + '</td>';
+                    html += '<td>' + dwses_safe(after.status) + '</td>';
+                    html += '<td class="' + dwses_getStatusClass(after.status) + '">' + dwses_safe(after.status_desc) + '</td>';
+                    html += '<td>P:' + dwses_safe(after.prdfail) + ' D:' + dwses_safe(after.disabled) + ' S:' + dwses_safe(after.swap) + '</td>';
                     html += '<td>' + after_extra.join(', ') + '</td>';
                     html += '</tr>';
                 });
@@ -304,7 +304,7 @@ Markdown="false"
         html += '</thead><tbody>';
 
         // Elements table rows
-        var sortedKeys = Object.keys(data.raw).sort(sortElementId);
+        var sortedKeys = Object.keys(data.raw).sort(dwses_sortElementId);
         $.each(sortedKeys, function(index, elementId) {
             var element = data.raw[elementId];
             if (!element) return;
@@ -314,10 +314,10 @@ Markdown="false"
             if (element.voltage) extra.push('Volt: ' + element.voltage + 'V');
             if (element.amperage) extra.push('Amp: ' + element.amperage + 'A');
 
-            html += '<tr><td>' + safe(elementId) + '</td><td>' + safe(element.element_type_desc) + '</td>';
-            html += '<td>' + safe(element.status) + '</td>';
-            html += '<td class="' + getStatusClass(element.status) + '">' + safe(element.status_desc) + '</td>';
-            html += '<td>' + safe(element.prdfail) + '</td><td>' + safe(element.disabled) + '</td><td>' + safe(element.swap) + '</td>';
+            html += '<tr><td>' + dwses_safe(elementId) + '</td><td>' + dwses_safe(element.element_type_desc) + '</td>';
+            html += '<td>' + dwses_safe(element.status) + '</td>';
+            html += '<td class="' + dwses_getStatusClass(element.status) + '">' + dwses_safe(element.status_desc) + '</td>';
+            html += '<td>' + dwses_safe(element.prdfail) + '</td><td>' + dwses_safe(element.disabled) + '</td><td>' + dwses_safe(element.swap) + '</td>';
             html += '<td>' + extra.join(', ') + '</td></tr>';
         });
 
@@ -328,7 +328,7 @@ Markdown="false"
 
     let openDeviceIds = {};
 
-    async function loadData() {
+    async function dwses_loadData() {
         const cacheBust = `?v=${Date.now()}`;
         const basePath = '/plugins/dwsesmon/json';
         const newContent = $('<div/>');
@@ -414,7 +414,7 @@ Markdown="false"
         });
 
         results.forEach(result => {
-            buildDevice(result.folderName, result.data, result.alarmDataArray, newContent);
+            dwses_buildDevice(result.folderName, result.data, result.alarmDataArray, newContent);
         });
 
         $('#dwses-content').html(newContent.html());
@@ -423,11 +423,11 @@ Markdown="false"
             const id = '#' + this.id;
             if (openDeviceIds[id]) {
                 $(this).show();
-                toggleChevron(id);
+                dwses_toggleChevron(id);
                 delete openDeviceIds[id];
             } else {
                 $(this).hide();
-                toggleChevron(id);
+                dwses_toggleChevron(id);
             }
         });
 
@@ -435,13 +435,13 @@ Markdown="false"
     }
 
     $(document).ready(function() {
-        loadData();
-        timers.loadData = setInterval(loadData, 15000);
+        dwses_loadData();
+        timers.dwses_loadData = setInterval(dwses_loadData, 15000);
 
         $(document).on('click', '[data-toggle-id]', function() {
             var targetId = '#' + $(this).data('toggle-id');
             $(targetId).toggle();
-            toggleChevron(targetId);
+            dwses_toggleChevron(targetId);
         });
     });
 </script>
