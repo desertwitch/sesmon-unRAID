@@ -4,7 +4,8 @@
 SES_DEV_PATH="$1"
 SES_DEV_ADDR="$2"
 SES_DEV_DESCR="$3"
-SES_ALARM_MSG="${4//=/\:}"
+SES_ALARM_MSG="${4//=/\:}" # for Unraid 7.1.x
+SES_ALARM_MSG="${SES_ALARM_MSG//#/\:}" # for Unraid 7.2.x
 SES_ALARM_JSON="$5"
 
 NOTIFY="/usr/local/emhttp/plugins/dynamix/scripts/notify"
