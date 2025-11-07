@@ -85,10 +85,41 @@ if (file_exists('/usr/local/emhttp/plugins/dwsesmon/start-failed')) {
         </dt>
         <dd>
             <span>
-                <input type="submit" id="btnApply" name="#apply" value="Apply">
+                <input type="submit" name="#apply" value="Apply">
                 <input type="button" value="Done" onclick="done()">
                 <input id="DEFAULT" type="submit" class="dwses-run dwses-tip" name="#default" value="Default" title="Revert the displayed settings to their default values, but not the program configuration.">
                 <input type="button" class="dwses-notrun dwses-tip" id="RESTART" value="Restart Service" title="Restart the service.">
+            </span>
+        </dd>
+    </dl>
+</form>
+
+<form markdown="0" id="dwses-display-settings" name="dwses_display_settings" method="POST" action="/update.php" target="progressFrame">
+    <input type="hidden" id="dwses-display-set-file" name="#file" value="dwsesmon/dwsesmon.cfg">
+    <input type="hidden" id="dwses-display-set-cmd" name="#command" value="/usr/local/emhttp/plugins/dwsesmon/scripts/write_config">
+
+    <dl>
+        <dt><strong>Frontpage Dashboards:</strong></dt>
+        <dd>
+            <select id="DASHBOARDS" name="DASHBOARDS" size="1">
+                <?=mk_option($dwses_dashboards, "disable", "No");?>
+                <?=mk_option($dwses_dashboards, "enable", "Yes");?>
+            </select>
+        </dd>
+    </dl>
+
+    <blockquote class="inline_help">
+    <p>This setting controls if enclosure dashboards should be shown on the frontpage.</p>
+    </blockquote>
+
+    <dl>
+        <dt>
+        </dt>
+        <dd>
+            <span>
+                <input type="submit" name="#apply" value="Apply">
+                <input type="button" value="Done" onclick="done()">
+                <input id="DEFAULT2" type="submit" class="dwses-run dwses-tip" name="#default" value="Default" title="Revert the displayed settings to their default values, but not the program configuration.">
             </span>
         </dd>
     </dl>
