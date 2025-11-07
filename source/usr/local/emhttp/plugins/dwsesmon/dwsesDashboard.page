@@ -81,7 +81,7 @@ try {
                 </tr>
                 <tr class='header'>
                     <td>
-                        <span class='w18'>Alarms</span>
+                        <span class='w18'>Alerts</span>
                         <span class='w18'>Critical</span>
                         <span class='w18'>Non-Critical</span>
                         <span class='w26'>Unrecoverable</span>
@@ -117,7 +117,7 @@ try {
                 </tr>
                 <tr class='header'>
                     <td>
-                        <span class='w18'>Alarms</span>
+                        <span class='w18'>Alerts</span>
                         <span class='w18'>Critical</span>
                         <span class='w18'>Non-Critical</span>
                         <span class='w26'>Unrecoverable</span>
@@ -189,7 +189,7 @@ function dwsesDashboards() {
                 $.getJSON(basePath + '/' + folderName + '/' + folderData.parsed + cacheBust)
                     .done(function(data) {
                         var statusCounts = {
-                            alarms: folderData.alerts.length,
+                            alerts: folderData.alerts.length,
                             critical: 0,      // status 2
                             noncritical: 0,   // status 3
                             unrecoverable: 0, // status 4
@@ -209,10 +209,10 @@ function dwsesDashboards() {
                             });
                         }
 
-                        if (statusCounts.alarms > 0) {
-                            var alarmText = statusCounts.alarms + ' Alarm' + (statusCounts.alarms > 1 ? 's' : '');
+                        if (statusCounts.alerts > 0) {
+                            var alertText = statusCounts.alerts + ' Alert' + (statusCounts.alerts > 1 ? 's' : '');
                             $('#' + folderName + '-header').html(
-                                '<span style="color:red;">' + alarmText + '</span> ' +
+                                '<span style="color:red;">' + alertText + '</span> ' +
                                 '| Last updated: ' + (data.captured_at || 'Unknown') + ' ' + dwsesTimeAgo(data.captured_at, true)
                             );
                         } else {
@@ -223,7 +223,7 @@ function dwsesDashboards() {
 
                         $('#' + folderName + '-body').html(
                             '<td>' +
-                                '<span class="w18">' + dwsesFormatCount(statusCounts.alarms, 'red') + ' Alarms</span>' +
+                                '<span class="w18">' + dwsesFormatCount(statusCounts.alerts, 'red') + ' Alerts</span>' +
                                 '<span class="w18">' + dwsesFormatCount(statusCounts.critical, 'red') + ' Sensors</span>' +
                                 '<span class="w18">' + dwsesFormatCount(statusCounts.noncritical, 'orange') + ' Sensors</span>' +
                                 '<span class="w26">' + dwsesFormatCount(statusCounts.unrecoverable, 'darkred') + ' Sensors</span>' +

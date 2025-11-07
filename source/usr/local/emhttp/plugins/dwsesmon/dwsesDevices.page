@@ -36,7 +36,7 @@ Cond="@shell_exec('pgrep -x sesmon 2>/dev/null')"
     .dwses-status-other { color: #999; }
 
     .dwses-device-section-header,
-    .dwses-alarm-section-header,
+    .dwses-alert-section-header,
     .dwses-elements-section-header {
         background-color: #e9ecef;
         border: 1px solid #dee2e6;
@@ -48,12 +48,12 @@ Cond="@shell_exec('pgrep -x sesmon 2>/dev/null')"
         font-size: 1.1em;
     }
 
-    .dwses-alarm-section-header,
+    .dwses-alert-section-header,
     .dwses-elements-section-header {
         font-size: 1.0em;
     }
 
-    .dwses-alarm-file-header th {
+    .dwses-alert-file-header th {
         background-color: #fff3cd;
         font-weight: bold;
         border-top: 1px solid #ddd;
@@ -64,7 +64,7 @@ Cond="@shell_exec('pgrep -x sesmon 2>/dev/null')"
         font-weight: normal;
     }
 
-    .dwses-alarm-count {
+    .dwses-alert-count {
         color: red;
         font-weight: bold;
     }
@@ -166,7 +166,7 @@ Cond="@shell_exec('pgrep -x sesmon 2>/dev/null')"
         }
     }
 
-    function dwses_buildDevice(folderName, data, alarmDataArray, targetContainer) {
+    function dwses_buildDevice(folderName, data, alertDataArray, targetContainer) {
         var html = '';
 
         data = data || {};
@@ -174,29 +174,29 @@ Cond="@shell_exec('pgrep -x sesmon 2>/dev/null')"
         data.raw = data.raw || {};
 
         var deviceContentId = 'dwses-content-' + folderName;
-        var alarmSectionId = 'dwses-alarms-' + folderName;
+        var alertSectionId = 'dwses-alerts-' + folderName;
         var elementsSectionId = 'dwses-elements-' + folderName;
 
-        // Alarms section status counts (do this here because device section needs it)
-        var totalAlarms = 0;
-        var alarmCounts = {2: 0, 3: 0, 4: 0, 1: 0, other: 0};
-        $.each(alarmDataArray, function(idx, alarmData) {
-            if (!alarmData || !Array.isArray(alarmData.changes)) {
+        // Alerts section status counts (do this here because device section needs it)
+        var totalAlerts = 0;
+        var alertCounts = {2: 0, 3: 0, 4: 0, 1: 0, other: 0};
+        $.each(alertDataArray, function(idx, alertData) {
+            if (!alertData || !Array.isArray(alertData.changes)) {
                 return;
             }
 
-            totalAlarms += alarmData.changes.length;
+            totalAlerts += alertData.changes.length;
 
-            $.each(alarmData.changes, function(changeIdx, change) {
+            $.each(alertData.changes, function(changeIdx, change) {
                 if (!change || !change.after) return;
 
                 var status = Number(change.after.status);
 
-                if (status === 2) alarmCounts[2]++;
-                else if (status === 3) alarmCounts[3]++;
-                else if (status === 4) alarmCounts[4]++;
-                else if (status === 1) alarmCounts[1]++;
-                else alarmCounts.other++;
+                if (status === 2) alertCounts[2]++;
+                else if (status === 3) alertCounts[3]++;
+                else if (status === 4) alertCounts[4]++;
+                else if (status === 1) alertCounts[1]++;
+                else alertCounts.other++;
             });
         });
 
@@ -214,19 +214,19 @@ Cond="@shell_exec('pgrep -x sesmon 2>/dev/null')"
         });
 
         var deviceSummary = [];
-        if (totalAlarms > 0) deviceSummary.push('<span class="dwses-alarm-count">' + totalAlarms + ' Alarm' + (totalAlarms > 1 ? 's' : '') + '</span>');
+        if (totalAlerts > 0) deviceSummary.push('<span class="dwses-alert-count">' + totalAlerts + ' Alert' + (totalAlerts > 1 ? 's' : '') + '</span>');
         if (statusCounts[2] > 0) deviceSummary.push('<span class="dwses-status-critical">' + statusCounts[2] + ' Critical</span>');
         if (statusCounts[3] > 0) deviceSummary.push('<span class="dwses-status-noncritical">' + statusCounts[3] + ' Noncritical</span>');
         if (statusCounts[4] > 0) deviceSummary.push('<span class="dwses-status-unrecoverable">' + statusCounts[4] + ' Unrecoverable</span>');
         if (statusCounts[1] > 0) deviceSummary.push('<span class="dwses-status-ok">' + statusCounts[1] + ' OK</span>');
         if (statusCounts.other > 0) deviceSummary.push('<span class="dwses-status-other">' + statusCounts.other + ' Other</span>');
 
-        var alarmTimeHtml = '';
-        if (alarmDataArray.length > 0) {
-            alarmDataArray.sort(function(a, b) {
+        var alertTimeHtml = '';
+        if (alertDataArray.length > 0) {
+            alertDataArray.sort(function(a, b) {
                 return new Date(b.detected_at) - new Date(a.detected_at);
             });
-            alarmTimeHtml = ' - Alarm: ' + alarmDataArray[0].detected_at + ' ' + dwses_getTimeAgo(alarmDataArray[0].detected_at, true);
+            alertTimeHtml = ' - Alert: ' + alertDataArray[0].detected_at + ' ' + dwses_getTimeAgo(alertDataArray[0].detected_at, true);
         }
 
         // Device section header
@@ -234,42 +234,42 @@ Cond="@shell_exec('pgrep -x sesmon 2>/dev/null')"
         html += '<i class="fa fa-chevron-right" id="'+ deviceContentId +'-chevron"></i> ';
         html += (dwses_safe(data.device.description) || folderName) + ' ';
         html += '(' + dwses_safe(data.device.path) + ':' + dwses_safe(data.device.address) + ') - ';
-        html += 'Updated: ' + dwses_safe(data.captured_at) + ' ' + dwses_getTimeAgo(data.captured_at, true) + alarmTimeHtml;
+        html += 'Updated: ' + dwses_safe(data.captured_at) + ' ' + dwses_getTimeAgo(data.captured_at, true) + alertTimeHtml;
         html += '<span class="dwses-status-summary">' + deviceSummary.join(' | ') + '</span>';
         html += '</div>';
 
         html += '<div id="' + deviceContentId + '" class="dwses-device-content">';
 
-        // Alarms Section
-        if (alarmDataArray.length > 0) {
-            var alarmSummary = [];
-            if (alarmCounts[2] > 0) alarmSummary.push('<span class="dwses-status-critical">' + alarmCounts[2] + ' Critical</span>');
-            if (alarmCounts[3] > 0) alarmSummary.push('<span class="dwses-status-noncritical">' + alarmCounts[3] + ' Noncritical</span>');
-            if (alarmCounts[4] > 0) alarmSummary.push('<span class="dwses-status-unrecoverable">' + alarmCounts[4] + ' Unrecoverable</span>');
-            if (alarmCounts[1] > 0) alarmSummary.push('<span class="dwses-status-ok">' + alarmCounts[1] + ' OK</span>');
-            if (alarmCounts.other > 0) alarmSummary.push('<span class="dwses-status-other">' + alarmCounts.other + ' Other</span>');
+        // Alerts Section
+        if (alertDataArray.length > 0) {
+            var alertSummary = [];
+            if (alertCounts[2] > 0) alertSummary.push('<span class="dwses-status-critical">' + alertCounts[2] + ' Critical</span>');
+            if (alertCounts[3] > 0) alertSummary.push('<span class="dwses-status-noncritical">' + alertCounts[3] + ' Noncritical</span>');
+            if (alertCounts[4] > 0) alertSummary.push('<span class="dwses-status-unrecoverable">' + alertCounts[4] + ' Unrecoverable</span>');
+            if (alertCounts[1] > 0) alertSummary.push('<span class="dwses-status-ok">' + alertCounts[1] + ' OK</span>');
+            if (alertCounts.other > 0) alertSummary.push('<span class="dwses-status-other">' + alertCounts.other + ' Other</span>');
 
-            // Alarms section header
-            html += '<div class="dwses-alarm-section-header">';
-            html += '<strong>ALARMS</strong> <span class="dwses-status-summary">' + alarmSummary.join(' | ') + '</span>';
+            // Alerts section header
+            html += '<div class="dwses-alert-section-header">';
+            html += '<strong>ALERTS</strong> <span class="dwses-status-summary">' + alertSummary.join(' | ') + '</span>';
             html += '</div>';
 
-            // Alarms section tables (one per alarm)
-            $.each(alarmDataArray, function(idx, alarmData) {
-                if (!alarmData || !Array.isArray(alarmData.changes)) return;
+            // Alerts section tables (one per alert)
+            $.each(alertDataArray, function(idx, alertData) {
+                if (!alertData || !Array.isArray(alertData.changes)) return;
 
-                // Alarm table header
-                html += '<table class="dwses-alarm-file-table tablesorter"><thead>';
-                html += '<tr class="dwses-alarm-file-header"><th colspan="10">';
-                html += '<strong>Change Detected:</strong> ' + dwses_safe(alarmData.detected_at) + ' ' + dwses_getTimeAgo(alarmData.detected_at, false);
+                // Alert table header
+                html += '<table class="dwses-alert-file-table tablesorter"><thead>';
+                html += '<tr class="dwses-alert-file-header"><th colspan="10">';
+                html += '<strong>Change Detected:</strong> ' + dwses_safe(alertData.detected_at) + ' ' + dwses_getTimeAgo(alertData.detected_at, false);
                 html += '</th></tr>';
                 html += '<tr>';
                 html += '<th>Element ID</th><th>Description</th><th>Before Status</th><th>Before Desc</th><th>Before Flags</th>';
                 html += '<th>Before Extra</th><th>After Status</th><th>After Desc</th><th>After Flags</th><th>After Extra</th></tr>';
                 html += '</thead><tbody>';
 
-                // Alarm table rows (one per change)
-                $.each(alarmData.changes, function(changeIdx, change) {
+                // Alert table rows (one per change)
+                $.each(alertData.changes, function(changeIdx, change) {
                     if (!change) return;
 
                     var before = change.before || {};
@@ -285,7 +285,7 @@ Cond="@shell_exec('pgrep -x sesmon 2>/dev/null')"
                     if (after.voltage) after_extra.push('Volt: ' + after.voltage + 'V');
                     if (after.amperage) after_extra.push('Amp: ' + after.amperage + 'A');
 
-                    html += '<tr class="alarm-change-row">';
+                    html += '<tr class="alert-change-row">';
                     html += '<td>' + dwses_safe(change.id) + '</td><td>' + dwses_safe(change.element_type_desc) + '</td>';
                     html += '<td>' + dwses_safe(before.status) + '</td>';
                     html += '<td class="' + dwses_getStatusClass(before.status) + '">' + dwses_safe(before.status_desc) + '</td>';
@@ -400,29 +400,29 @@ Cond="@shell_exec('pgrep -x sesmon 2>/dev/null')"
             }
             const data = await deviceRes.json();
 
-            // Device alarms data
+            // Device alerts data
             const alerts = folderData.alerts || [];
-            let alarmDataArray = [];
+            let alertDataArray = [];
 
             if (alerts.length > 0) {
-                const alarmPromises = alerts.map(async (alertFile) => {
+                const alertPromises = alerts.map(async (alertFile) => {
                     try {
-                        const alarmRes = await fetch(`${basePath}/${folderName}/${alertFile}${cacheBust}`);
-                        if (!alarmRes.ok) {
-                            throw new Error(alarmRes.statusText || 'Alarm fetch failed');
+                        const alertRes = await fetch(`${basePath}/${folderName}/${alertFile}${cacheBust}`);
+                        if (!alertRes.ok) {
+                            throw new Error(alertRes.statusText || 'Alert fetch failed');
                         }
-                        return await alarmRes.json();
+                        return await alertRes.json();
                     } catch (e) {
-                        console.warn(`Failed to load alarm ${alertFile} for ${folderName}:`, e);
+                        console.warn(`Failed to load alert ${alertFile} for ${folderName}:`, e);
                         return null;
                     }
                 });
 
-                const alarmResults = await Promise.all(alarmPromises);
-                alarmDataArray = alarmResults.filter(a => a !== null);
+                const alertResults = await Promise.all(alertPromises);
+                alertDataArray = alertResults.filter(a => a !== null);
             }
 
-            return { folderName, data, alarmDataArray };
+            return { folderName, data, alertDataArray };
         });
 
         const results = (await Promise.all(devicePromises)).filter(r => r);
@@ -435,7 +435,7 @@ Cond="@shell_exec('pgrep -x sesmon 2>/dev/null')"
         });
 
         results.forEach(result => {
-            dwses_buildDevice(result.folderName, result.data, result.alarmDataArray, newContent);
+            dwses_buildDevice(result.folderName, result.data, result.alertDataArray, newContent);
         });
 
         $('#dwses-content').html(newContent.html());

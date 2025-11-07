@@ -148,7 +148,7 @@ if (file_exists('/usr/local/emhttp/plugins/dwsesmon/start-failed')) {
 
     <dl>
         <dt>
-            <input id="CLEARALARMS" class="dwses-tip" type="button" value="Clear Alarms" title="Clear all alarms from the dashboard (until the next alarm populates it again).">
+            <input id="CLEARALERTS" class="dwses-tip" type="button" value="Clear Alerts" title="Clear all alerts from the dashboard (until the next alert populates it again).">
             <input id="CLEARDEVICES" class="dwses-tip" type="button" value="Clear Devices" title="Clear all devices from the dashboard (until next poll populates it again).">
         </dt>
         <dd>
@@ -197,8 +197,8 @@ $(function() {
         $('#dwses-display-settings').submit();
     });
 
-    $('#CLEARALARMS').click(function(){
-        $('#dwses-display-set-cmd').val('/usr/local/emhttp/plugins/dwsesmon/scripts/clear_alarms');
+    $('#CLEARALERTS').click(function(){
+        $('#dwses-display-set-cmd').val('/usr/local/emhttp/plugins/dwsesmon/scripts/clear_alerts');
         $('#dwses-display-settings').submit();
     });
 
