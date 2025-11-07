@@ -21,6 +21,7 @@ $dwses_cfg = file_exists("/boot/config/plugins/dwsesmon/dwsesmon.cfg") ? parse_i
 
 $dwses_service = trim(isset($dwses_cfg['SERVICE']) ? htmlspecialchars($dwses_cfg['SERVICE']) : 'disable');
 $dwses_dashboards = trim(isset($dwses_cfg['DASHBOARDS']) ? htmlspecialchars($dwses_cfg['DASHBOARDS']) : 'disable');
+$dwses_start_notify = trim(isset($dwses_cfg['STARTNOTIFY']) ? htmlspecialchars($dwses_cfg['STARTNOTIFY']) : 'disable');
 
 $dwses_running = !empty(shell_exec("pgrep -x sesmon 2>/dev/null"));
 $dwses_backend = htmlspecialchars(trim(shell_exec("find /var/log/packages/ -type f -iname 'sesmon-*' -printf '%f\n' 2> /dev/null") ?? "n/a"));

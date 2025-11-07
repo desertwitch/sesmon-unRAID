@@ -6,6 +6,17 @@ DOCROOT="/usr/local/emhttp/plugins/dwsesmon"
 
 error_at_start() {
     touch $DOCROOT/start-failed
+
+    source "/boot/config/plugins/dwsesmon/dwsesmon.cfg"
+    if [ "$STARTNOTIFY" == "enable" ]; then
+        NOTIFY="/usr/local/emhttp/plugins/dynamix/scripts/notify"
+        HOST="$(echo "$HOSTNAME" | awk '{print toupper($0)}')"
+        EVENT="SCSI Monitor Failure"
+        SUBJECT="[${HOST}] SCSI Monitor Failure"
+        MESSAGE="Service could not be started (check configuration and logs)."
+        timeout -s9 10 "$NOTIFY" -e "${EVENT}" -s "Alert ${SUBJECT}" -d "${MESSAGE}" -i "alert"
+    fi
+
     exit 1
 }
 

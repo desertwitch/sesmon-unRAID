@@ -37,6 +37,10 @@ if (file_exists('/usr/local/emhttp/plugins/dwsesmon/start-failed')) {
 </div><br>
 <?endif;?>
 
+<div>
+    <span class="left" style="font-size:1.1rem;letter-spacing:1px;padding-left:5px;"><strong><i class="icon fa fa-cogs"></i>GENERAL SETTINGS</strong></span>
+</div><br>
+
 <form markdown="0" id="dwses-settings" name="dwses_settings" method="POST" action="/update.php" target="progressFrame">
     <input type="hidden" id="dwses-set-file" name="#file" value="dwsesmon/dwsesmon.cfg">
     <input type="hidden" id="dwses-set-cmd" name="#command" value="/usr/local/emhttp/plugins/dwsesmon/scripts/none">
@@ -76,11 +80,24 @@ if (file_exists('/usr/local/emhttp/plugins/dwsesmon/start-failed')) {
     </blockquote>
 
     <dl>
+        <dt><strong>Start Failure Notification:</strong></dt>
+        <dd>
+            <select id="STARTNOTIFY" name="STARTNOTIFY" size="1">
+                <?=mk_option($dwses_start_notify, "disable", "No");?>
+                <?=mk_option($dwses_start_notify, "enable", "Yes");?>
+            </select>
+        </dd>
+    </dl>
+
+    <blockquote class="inline_help">
+    <p>If enabled a notification will be raised (through the OS notifications) if the service fails to start.</p>
+    </blockquote>
+
+    <dl>
         <dt>
             <span>
-                <input id="CLEARALARMS" class="dwses-tip" type="button" value="Clear Alarms" title="Clear all alarms from the dashboard (until the next alarm populates it again).">
-                <input id="CLEARDEVICES" class="dwses-tip" type="button" value="Clear Devices" title="Clear all devices from the dashboard (until next poll populates it again).">
                 <input id="RESETCONF" class="dwses-run dwses-tip" type="button" value="Reset Config" title="Revert the whole configuration to its default state, including the program configuration.">
+                <input type="button" class="dwses-notrun dwses-tip" id="RESTART" value="Restart Service" title="Restart the service.">
             </span>
         </dt>
         <dd>
@@ -88,11 +105,14 @@ if (file_exists('/usr/local/emhttp/plugins/dwsesmon/start-failed')) {
                 <input type="submit" name="#apply" value="Apply">
                 <input type="button" value="Done" onclick="done()">
                 <input id="DEFAULT" type="submit" class="dwses-run dwses-tip" name="#default" value="Default" title="Revert the displayed settings to their default values, but not the program configuration.">
-                <input type="button" class="dwses-notrun dwses-tip" id="RESTART" value="Restart Service" title="Restart the service.">
             </span>
         </dd>
     </dl>
 </form>
+
+<div>
+    <span class="left" style="font-size:1.1rem;letter-spacing:1px;padding-left:5px;"><strong><i class="icon fa fa-cogs"></i>DISPLAY SETTINGS</strong></span>
+</div><br>
 
 <form markdown="0" id="dwses-display-settings" name="dwses_display_settings" method="POST" action="/update.php" target="progressFrame">
     <input type="hidden" id="dwses-display-set-file" name="#file" value="dwsesmon/dwsesmon.cfg">
@@ -114,12 +134,14 @@ if (file_exists('/usr/local/emhttp/plugins/dwsesmon/start-failed')) {
 
     <dl>
         <dt>
+            <input id="CLEARALARMS" class="dwses-tip" type="button" value="Clear Alarms" title="Clear all alarms from the dashboard (until the next alarm populates it again).">
+            <input id="CLEARDEVICES" class="dwses-tip" type="button" value="Clear Devices" title="Clear all devices from the dashboard (until next poll populates it again).">
         </dt>
         <dd>
             <span>
                 <input type="submit" name="#apply" value="Apply">
                 <input type="button" value="Done" onclick="done()">
-                <input id="DEFAULT2" type="submit" class="dwses-run dwses-tip" name="#default" value="Default" title="Revert the displayed settings to their default values, but not the program configuration.">
+                <input id="DEFAULT2" type="submit" class="dwses-tip" name="#default" value="Default" title="Revert the displayed settings to their default values, but not the program configuration.">
             </span>
         </dd>
     </dl>
@@ -157,13 +179,13 @@ $(function() {
     $('#RESETCONF').click(function(){ swal({title:"Are you sure?",text:"This action will return any existing configuration to their defaults!",type:"warning",html:true,showCancelButton:true}, dwsesResetConfig); });
 
     $('#CLEARDEVICES').click(function(){
-        $('#dwses-set-cmd').val('/usr/local/emhttp/plugins/dwsesmon/scripts/clear_devices');
-        $('#dwses-settings').submit();
+        $('#dwses-display-set-cmd').val('/usr/local/emhttp/plugins/dwsesmon/scripts/clear_devices');
+        $('#dwses-display-settings').submit();
     });
 
     $('#CLEARALARMS').click(function(){
-        $('#dwses-set-cmd').val('/usr/local/emhttp/plugins/dwsesmon/scripts/clear_alarms');
-        $('#dwses-settings').submit();
+        $('#dwses-display-set-cmd').val('/usr/local/emhttp/plugins/dwsesmon/scripts/clear_alarms');
+        $('#dwses-display-settings').submit();
     });
 
     $('#RESTART').click(function(){
