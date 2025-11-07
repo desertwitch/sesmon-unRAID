@@ -23,7 +23,7 @@ Link="nav-user"
 require_once '/usr/local/emhttp/plugins/dwsesmon/include/dwses_config.php';
 require_once '/usr/local/emhttp/plugins/dwsesmon/include/dwses_helpers.php';
 ?>
-<?if(stripos($path, "dashboard") !== false && $dwses_running && $dwses_dashboards == "enable"):?>
+<?if(stripos($path, "dashboard") !== false && $dwses_dashboards == "enable"):?>
 <?
 try {
     foreach (dwses_device_folders() as $dwses_folder_name => $dwses_folder_data) {
