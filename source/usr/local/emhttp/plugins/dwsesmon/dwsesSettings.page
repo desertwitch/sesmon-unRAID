@@ -90,7 +90,7 @@ if (file_exists('/usr/local/emhttp/plugins/dwsesmon/start-failed')) {
     </dl>
 
     <blockquote class="inline_help">
-    <p>This setting controls if the sesmon service should be started.</p>
+    <p>This setting controls if the sesmon service should be started (now and on system reboot).</p>
     </blockquote>
 
     <dl>
@@ -143,7 +143,7 @@ if (file_exists('/usr/local/emhttp/plugins/dwsesmon/start-failed')) {
     </dl>
 
     <blockquote class="inline_help">
-    <p>This setting controls if enclosure dashboards should be shown on the frontpage.</p>
+    <p>This setting controls if the enclosure dashboards should be shown on the frontpage dashboard.</p>
     </blockquote>
 
     <dl>
