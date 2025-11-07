@@ -19,8 +19,8 @@
 
 source "/boot/config/plugins/dwsesmon/dwsesmon.cfg"
 
-echo "Writing sesmon configuration..."
-echo "Writing sesmon configuration..." | logger -t "sesmon-plugin"
+echo "Writing configuration..."
+echo "Writing configuration..." | logger -t "sesmon-plugin"
 
 mkdir -p /boot/config/plugins/dwsesmon/config
 cp -rf /etc/sesmon/* /boot/config/plugins/dwsesmon/config/
