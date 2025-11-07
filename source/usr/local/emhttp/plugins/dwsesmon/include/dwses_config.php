@@ -25,7 +25,7 @@ $dwses_start_notify = trim(isset($dwses_cfg['STARTNOTIFY']) ? htmlspecialchars($
 
 $dwses_running = !empty(shell_exec("pgrep -x sesmon 2>/dev/null"));
 $dwses_version = htmlspecialchars(trim(shell_exec("sesmon --version") ?? "n/a"));
-$dwses_sg_version = htmlspecialchars(trim((($vout = trim(shell_exec("sg_ses --version 2>&1") ?? '')) && str_starts_with($vout, 'version:')) ? $vout : 'n/a'));
+$dwses_sg_version = htmlspecialchars(trim((($sgout = trim(shell_exec("sg_ses --version 2>&1") ?? '')) && str_contains($sgout, '.')) ? $sgout : 'n/a'));
 $dwses_backend = htmlspecialchars(trim(shell_exec("find /var/log/packages/ -type f -iname 'sesmon-*' -printf '%f\n' 2> /dev/null") ?? "n/a"));
 $dwses_sg_backend = htmlspecialchars(trim(shell_exec("find /var/log/packages/ -type f -iname 'sg3_utils-*' -printf '%f\n' 2> /dev/null") ?? "n/a"));
 ?>
