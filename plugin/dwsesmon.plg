@@ -23,6 +23,11 @@
 - release note: please report any problems in the support topic.
 </CHANGES>
 
+<FILE Name="&plgPATH;/sg3_utils-1.48-x86_64-1.txz" Min="7.0" Run="upgradepkg --install-new">
+<URL>&pkgURL;/sg3_utils-1.48-x86_64-1.txz</URL>
+<MD5>729037adba32bb9eaea2a589a34d02b3</MD5>
+</FILE>
+
 <FILE Name="&plgPATH;/&plgNAME;.txz" Min="7.0" Run="upgradepkg --install-new">
 <URL>&gitURL;/archive/&plgNAME;.txz</URL>
 <MD5>&plgMD5;</MD5>
