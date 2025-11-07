@@ -4,68 +4,68 @@ Tag="server"
 Markdown="false"
 ---
 <style>
-    .status-ok { color: green; }
-    .status-critical { color: red; font-weight: bold; }
-    .status-noncritical { color: orange; }
-    .status-unrecoverable { color: darkred; font-weight: bold; }
-    .status-unsupported { color: #999; }
-    .status-not-installed { color: #999; }
-    .status-unknown { color: #cc9900; }
-    .status-not-available { color: #999; }
-    .status-other { color: #999; }
+    .dwses-status-ok { color: green; }
+    .dwses-status-critical { color: red; font-weight: bold; }
+    .dwses-status-noncritical { color: orange; }
+    .dwses-status-unrecoverable { color: darkred; font-weight: bold; }
+    .dwses-status-unsupported { color: #999; }
+    .dwses-status-not-installed { color: #999; }
+    .dwses-status-unknown { color: #cc9900; }
+    .dwses-status-not-available { color: #999; }
+    .dwses-status-other { color: #999; }
 
-    .device-section-header,
-    .alarm-section-header,
-    .elements-section-header {
+    .dwses-device-section-header,
+    .dwses-alarm-section-header,
+    .dwses-elements-section-header {
         background-color: #e9ecef;
         border: 1px solid #dee2e6;
         border-bottom: none;
         color: #333;
     }
 
-    .device-section-header {
+    .dwses-device-section-header {
         font-size: 1.1em;
     }
 
-    .alarm-section-header,
-    .elements-section-header {
+    .dwses-alarm-section-header,
+    .dwses-elements-section-header {
         font-size: 1.0em;
     }
 
-    .alarm-file-header th {
+    .dwses-alarm-file-header th {
         background-color: #fff3cd;
         font-weight: bold;
         border-top: 1px solid #ddd;
     }
 
-    .status-summary {
+    .dwses-status-summary {
         float: right;
         font-weight: normal;
     }
 
-    .alarm-count {
+    .dwses-alarm-count {
         color: red;
         font-weight: bold;
     }
 
-    .time-ok {
+    .dwses-time-ok {
         color: green;
     }
 
-    .time-stale {
+    .dwses-time-stale {
         color: red;
     }
 
-    .device-section-header {
+    .dwses-device-section-header {
         cursor: pointer;
     }
 
-    .device-content {
+    .dwses-device-content {
         display: none;
     }
 </style>
 
-<div id="content"></div>
+<div id="dwses-content"></div>
 
 <script>
     function safe(val) {
@@ -100,7 +100,7 @@ Markdown="false"
         var diffMins = Math.floor(diffMs / 60000);
 
         var isStale = diffMins > 10;
-        var timeClass = isStale ? 'time-stale' : 'time-ok';
+        var timeClass = isStale ? 'dwses-time-stale' : 'dwses-time-ok';
 
         var timeText = '';
         if (diffMins < 1) {
@@ -113,9 +113,9 @@ Markdown="false"
         }
 
         if (withColor) {
-            return '<span class="time-ago ' + timeClass + '">(' + timeText + ')</span>';
+            return '<span class="dwses-time-ago ' + timeClass + '">(' + timeText + ')</span>';
         } else {
-            return '<span class="time-ago">(' + timeText + ')</span>';
+            return '<span class="dwses-time-ago">(' + timeText + ')</span>';
         }
     }
 
@@ -123,14 +123,14 @@ Markdown="false"
         if (status == undefined || status == null) return '';
 
         var s = Number(status);
-        if (s === 1) return 'status-ok';
-        else if (s === 2) return 'status-critical';
-        else if (s === 3) return 'status-noncritical';
-        else if (s === 4) return 'status-unrecoverable';
-        else if (s === 0) return 'status-unsupported';
-        else if (s === 5) return 'status-not-installed';
-        else if (s === 6) return 'status-unknown';
-        else if (s === 7) return 'status-not-available';
+        if (s === 1) return 'dwses-status-ok';
+        else if (s === 2) return 'dwses-status-critical';
+        else if (s === 3) return 'dwses-status-noncritical';
+        else if (s === 4) return 'dwses-status-unrecoverable';
+        else if (s === 0) return 'dwses-status-unsupported';
+        else if (s === 5) return 'dwses-status-not-installed';
+        else if (s === 6) return 'dwses-status-unknown';
+        else if (s === 7) return 'dwses-status-not-available';
 
         return '';
     }
@@ -152,9 +152,9 @@ Markdown="false"
         data.device = data.device || {};
         data.raw = data.raw || {};
 
-        var deviceContentId = 'content-' + folderName;
-        var alarmSectionId = 'alarms-' + folderName;
-        var elementsSectionId = 'elements-' + folderName;
+        var deviceContentId = 'dwses-content-' + folderName;
+        var alarmSectionId = 'dwses-alarms-' + folderName;
+        var elementsSectionId = 'dwses-elements-' + folderName;
 
         // Alarms section status counts (do this here because device section needs it)
         var totalAlarms = 0;
@@ -193,12 +193,12 @@ Markdown="false"
         });
 
         var deviceSummary = [];
-        if (totalAlarms > 0) deviceSummary.push('<span class="alarm-count">' + totalAlarms + ' Alarm' + (totalAlarms > 1 ? 's' : '') + '</span>');
-        if (statusCounts[2] > 0) deviceSummary.push('<span class="status-critical">' + statusCounts[2] + ' Critical</span>');
-        if (statusCounts[3] > 0) deviceSummary.push('<span class="status-noncritical">' + statusCounts[3] + ' Noncritical</span>');
-        if (statusCounts[4] > 0) deviceSummary.push('<span class="status-unrecoverable">' + statusCounts[4] + ' Unrecoverable</span>');
-        if (statusCounts[1] > 0) deviceSummary.push('<span class="status-ok">' + statusCounts[1] + ' OK</span>');
-        if (statusCounts.other > 0) deviceSummary.push('<span class="status-other">' + statusCounts.other + ' Other</span>');
+        if (totalAlarms > 0) deviceSummary.push('<span class="dwses-alarm-count">' + totalAlarms + ' Alarm' + (totalAlarms > 1 ? 's' : '') + '</span>');
+        if (statusCounts[2] > 0) deviceSummary.push('<span class="dwses-status-critical">' + statusCounts[2] + ' Critical</span>');
+        if (statusCounts[3] > 0) deviceSummary.push('<span class="dwses-status-noncritical">' + statusCounts[3] + ' Noncritical</span>');
+        if (statusCounts[4] > 0) deviceSummary.push('<span class="dwses-status-unrecoverable">' + statusCounts[4] + ' Unrecoverable</span>');
+        if (statusCounts[1] > 0) deviceSummary.push('<span class="dwses-status-ok">' + statusCounts[1] + ' OK</span>');
+        if (statusCounts.other > 0) deviceSummary.push('<span class="dwses-status-other">' + statusCounts.other + ' Other</span>');
 
         var alarmTimeHtml = '';
         if (alarmDataArray.length > 0) {
@@ -209,28 +209,28 @@ Markdown="false"
         }
 
         // Device section header
-        html += '<div class="device-section-header" data-toggle-id="' + deviceContentId + '" style="cursor: pointer;">';
+        html += '<div class="dwses-device-section-header" data-toggle-id="' + deviceContentId + '" style="cursor: pointer;">';
         html += '<i class="fa fa-chevron-right" id="'+ deviceContentId +'-chevron"></i> ';
         html += (safe(data.device.description) || folderName) + ' ';
         html += '(' + safe(data.device.path) + ':' + safe(data.device.address) + ') - ';
         html += 'Updated: ' + safe(data.captured_at) + ' ' + getTimeAgo(data.captured_at, true) + alarmTimeHtml;
-        html += '<span class="status-summary">' + deviceSummary.join(' | ') + '</span>';
+        html += '<span class="dwses-status-summary">' + deviceSummary.join(' | ') + '</span>';
         html += '</div>';
 
-        html += '<div id="' + deviceContentId + '" class="device-content">';
+        html += '<div id="' + deviceContentId + '" class="dwses-device-content">';
 
         // Alarms Section
         if (alarmDataArray.length > 0) {
             var alarmSummary = [];
-            if (alarmCounts[2] > 0) alarmSummary.push('<span class="status-critical">' + alarmCounts[2] + ' Critical</span>');
-            if (alarmCounts[3] > 0) alarmSummary.push('<span class="status-noncritical">' + alarmCounts[3] + ' Noncritical</span>');
-            if (alarmCounts[4] > 0) alarmSummary.push('<span class="status-unrecoverable">' + alarmCounts[4] + ' Unrecoverable</span>');
-            if (alarmCounts[1] > 0) alarmSummary.push('<span class="status-ok">' + alarmCounts[1] + ' OK</span>');
-            if (alarmCounts.other > 0) alarmSummary.push('<span class="status-other">' + alarmCounts.other + ' Other</span>');
+            if (alarmCounts[2] > 0) alarmSummary.push('<span class="dwses-status-critical">' + alarmCounts[2] + ' Critical</span>');
+            if (alarmCounts[3] > 0) alarmSummary.push('<span class="dwses-status-noncritical">' + alarmCounts[3] + ' Noncritical</span>');
+            if (alarmCounts[4] > 0) alarmSummary.push('<span class="dwses-status-unrecoverable">' + alarmCounts[4] + ' Unrecoverable</span>');
+            if (alarmCounts[1] > 0) alarmSummary.push('<span class="dwses-status-ok">' + alarmCounts[1] + ' OK</span>');
+            if (alarmCounts.other > 0) alarmSummary.push('<span class="dwses-status-other">' + alarmCounts.other + ' Other</span>');
 
             // Alarms section header
-            html += '<div class="alarm-section-header">';
-            html += '<strong>ALARMS</strong> <span class="status-summary">' + alarmSummary.join(' | ') + '</span>';
+            html += '<div class="dwses-alarm-section-header">';
+            html += '<strong>ALARMS</strong> <span class="dwses-status-summary">' + alarmSummary.join(' | ') + '</span>';
             html += '</div>';
 
             // Alarms section tables (one per alarm)
@@ -238,8 +238,8 @@ Markdown="false"
                 if (!alarmData || !Array.isArray(alarmData.changes)) return;
 
                 // Alarm table header
-                html += '<table class="alarm-file-table tablesorter"><thead>';
-                html += '<tr class="alarm-file-header"><th colspan="10">';
+                html += '<table class="dwses-alarm-file-table tablesorter"><thead>';
+                html += '<tr class="dwses-alarm-file-header"><th colspan="10">';
                 html += '<strong>Change Detected:</strong> ' + safe(alarmData.detected_at) + ' ' + getTimeAgo(alarmData.detected_at, false);
                 html += '</th></tr>';
                 html += '<tr>';
@@ -283,19 +283,19 @@ Markdown="false"
 
         // Elements section status counts
         var elementSummary = [];
-        if (statusCounts[2] > 0) elementSummary.push('<span class="status-critical">' + statusCounts[2] + ' Critical</span>');
-        if (statusCounts[3] > 0) elementSummary.push('<span class="status-noncritical">' + statusCounts[3] + ' Noncritical</span>');
-        if (statusCounts[4] > 0) elementSummary.push('<span class="status-unrecoverable">' + statusCounts[4] + ' Unrecoverable</span>');
-        if (statusCounts[1] > 0) elementSummary.push('<span class="status-ok">' + statusCounts[1] + ' OK</span>');
-        if (statusCounts.other > 0) elementSummary.push('<span class="status-other">' + statusCounts.other + ' Other</span>');
+        if (statusCounts[2] > 0) elementSummary.push('<span class="dwses-status-critical">' + statusCounts[2] + ' Critical</span>');
+        if (statusCounts[3] > 0) elementSummary.push('<span class="dwses-status-noncritical">' + statusCounts[3] + ' Noncritical</span>');
+        if (statusCounts[4] > 0) elementSummary.push('<span class="dwses-status-unrecoverable">' + statusCounts[4] + ' Unrecoverable</span>');
+        if (statusCounts[1] > 0) elementSummary.push('<span class="dwses-status-ok">' + statusCounts[1] + ' OK</span>');
+        if (statusCounts.other > 0) elementSummary.push('<span class="dwses-status-other">' + statusCounts.other + ' Other</span>');
 
         // Elements sections header
-        html += '<div class="elements-section-header">';
-        html += '<strong>ELEMENTS</strong> <span class="status-summary">' + elementSummary.join(' | ') + '</span>';
+        html += '<div class="dwses-elements-section-header">';
+        html += '<strong>ELEMENTS</strong> <span class="dwses-status-summary">' + elementSummary.join(' | ') + '</span>';
         html += '</div>';
 
         // Elements table
-        html += '<table class="elements-table tablesorter"><thead>';
+        html += '<table class="dwses-elements-table tablesorter"><thead>';
 
         // Elements table header
         html += '<tr>';
@@ -360,7 +360,7 @@ Markdown="false"
             }
         });
         if (folderArray.length === 0) {
-            $('#content').html("<i>There are currently no enclosure device reports available.</i>");
+            $('#dwses-content').html("<i>There are currently no enclosure device reports available.</i>");
             return;
         }
 
@@ -417,9 +417,9 @@ Markdown="false"
             buildDevice(result.folderName, result.data, result.alarmDataArray, newContent);
         });
 
-        $('#content').html(newContent.html());
+        $('#dwses-content').html(newContent.html());
 
-        $('.device-content').each(function() {
+        $('.dwses-device-content').each(function() {
             const id = '#' + this.id;
             if (openDeviceIds[id]) {
                 $(this).show();
