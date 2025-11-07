@@ -133,7 +133,7 @@ if (file_exists('/usr/local/emhttp/plugins/dwsesmon/start-failed')) {
     <input type="hidden" id="dwses-display-set-cmd" name="#command" value="/usr/local/emhttp/plugins/dwsesmon/scripts/write_config">
 
     <dl>
-        <dt><strong>Frontpage Dashboards:</strong></dt>
+        <dt>Frontpage Dashboards:</dt>
         <dd>
             <select id="DASHBOARDS" name="DASHBOARDS" size="1">
                 <?=mk_option($dwses_dashboards, "disable", "No");?>
