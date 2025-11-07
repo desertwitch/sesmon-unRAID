@@ -80,7 +80,7 @@ if (file_exists('/usr/local/emhttp/plugins/dwsesmon/start-failed')) {
     </blockquote>
 
     <dl>
-        <dt><strong>Start Failure Notification:</strong></dt>
+        <dt>Start Failure Notification:</dt>
         <dd>
             <select id="STARTNOTIFY" name="STARTNOTIFY" class="dwses-run" size="1">
                 <?=mk_option($dwses_start_notify, "disable", "No");?>
