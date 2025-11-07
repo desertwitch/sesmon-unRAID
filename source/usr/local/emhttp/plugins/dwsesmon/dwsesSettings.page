@@ -46,7 +46,7 @@ if (file_exists('/usr/local/emhttp/plugins/dwsesmon/start-failed')) {
     <input type="hidden" id="dwses-set-cmd" name="#command" value="/usr/local/emhttp/plugins/dwsesmon/scripts/none">
 
     <dl>
-        <dt>sesmon:</dt>
+        <dt>sesmon Version:</dt>
         <dd>
             <strong><?= isset($dwses_version) && $dwses_version ? $dwses_version : "n/a" ?></strong>
         </dd>
@@ -60,7 +60,7 @@ if (file_exists('/usr/local/emhttp/plugins/dwsesmon/start-failed')) {
     </dl>
 
     <dl>
-        <dt>sg_ses:</dt>
+        <dt>sg_ses Version:</dt>
         <dd>
             <strong><?= isset($dwses_sg_version) && $dwses_sg_version ? $dwses_sg_version : "n/a" ?></strong>
         </dd>
