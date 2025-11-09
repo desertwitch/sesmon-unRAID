@@ -5,4 +5,4 @@
 
 **Installation:** https://raw.githubusercontent.com/desertwitch/sesmon-unRAID/main/plugin/dwsesmon.plg
 
-**Backend Source / Documentation**: https://github.com/desertwitch/sesmon
+**sesmon Source / Documentation**: https://github.com/desertwitch/sesmon
