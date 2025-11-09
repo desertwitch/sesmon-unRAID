@@ -14,7 +14,7 @@
 <!ENTITY emhttp    "/usr/local/emhttp/plugins/&name;">
 ]>
 
-<PLUGIN name="&name;" author="&author;" version="&version;" launch="&launch;" pluginURL="&pluginURL;" support="" min="7.0">
+<PLUGIN name="&name;" author="&author;" version="&version;" launch="&launch;" pluginURL="&pluginURL;" support="https://forums.unraid.net/topic/194941-plugin-scsi-enclosure-monitor/" min="7.0">
 
 <CHANGES>
 ## SCSI Enclosure Monitor for UNRAID
