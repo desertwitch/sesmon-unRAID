@@ -1,3 +1,3 @@
 **SCSI Enclosure Monitor for UNRAID**
 
-Monitors SCSI enclosures which implement the SES standard (e.g. disk shelves)
+Monitors SES-capable SCSI enclosures (such as disk shelves)
