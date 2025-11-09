@@ -2,7 +2,6 @@ Menu="dwses:2"
 Title="Enclosure Devices"
 Tag="server"
 Markdown="false"
-Cond="@shell_exec('pgrep -x sesmon 2>/dev/null')"
 ---
 <?
 /* Copyright Derek Macias (parts of code from NUT package)

@@ -50,20 +50,24 @@ Markdown="false"
 <br><br>
 
 <?php
-function run_sesmon($cmd, $label) {
-    $output = [];
-    $return_var = 0;
-    exec($cmd . ' 2>&1', $output, $return_var);
-    $result = implode("\n", $output);
+try {
+    function run_sesmon($cmd, $label) {
+        $output = [];
+        $return_var = 0;
+        exec($cmd . ' 2>&1', $output, $return_var);
+        $result = implode("\n", $output);
 
-    if ($return_var === 0) {
-        echo "<span style='color:green'><i class='fa fa-check-circle'></i> The {$label} has passed for the most recently saved configuration file.</span><br>";
-    } else {
-        echo "<span style='color:red'><i class='fa fa-times-circle '></i> The {$label} has failed for the most recently saved configuration file:<br><pre>" . htmlspecialchars($result) . "</pre></span>";
+        if ($return_var === 0) {
+            echo "<span style='color:green'><i class='fa fa-check-circle'></i> The {$label} has passed for the most recently saved configuration file.</span><br>";
+        } else {
+            echo "<span style='color:red'><i class='fa fa-times-circle '></i> The {$label} has failed for the most recently saved configuration file:<br><pre>" . htmlspecialchars($result) . "</pre></span>";
+        }
     }
+    run_sesmon('sesmon check /etc/sesmon/config.yaml', 'configuration check');
+    run_sesmon('sesmon test /etc/sesmon/config.yaml', 'configuration test');
+} catch (\Throwable $t) {
+    error_log($t);
 }
-run_sesmon('sesmon check /etc/sesmon/config.yaml', 'configuration check');
-run_sesmon('sesmon test /etc/sesmon/config.yaml', 'configuration test');
 ?>
 
 </div><br>

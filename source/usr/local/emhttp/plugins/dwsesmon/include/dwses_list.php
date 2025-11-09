@@ -20,5 +20,5 @@
 require_once '/usr/local/emhttp/plugins/dwsesmon/include/dwses_helpers.php';
 
 header('Content-Type: application/json');
-echo json_encode(dwses_device_folders(), JSON_PRETTY_PRINT);
+echo json_encode(dwses_device_folders());
 ?>

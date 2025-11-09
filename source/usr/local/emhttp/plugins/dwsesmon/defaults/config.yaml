@@ -103,12 +103,12 @@ devices:
   - device: "/dev/sg25"
     type: 0
     description: "JBOD2"
-    enabled: true
+    enabled: false
     # Uses all default settings and no notification agent
 
   # Device 3 - JSON file for simulations and/or testing
   - device: "/tmp/device.json"
     type: 1
     description: "JBOD3"
-    enabled: true
+    enabled: false
     # Uses all default settings and no notification agent

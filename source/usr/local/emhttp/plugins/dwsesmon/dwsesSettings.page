@@ -46,13 +46,6 @@ if (file_exists('/usr/local/emhttp/plugins/dwsesmon/start-failed')) {
     <input type="hidden" id="dwses-set-cmd" name="#command" value="/usr/local/emhttp/plugins/dwsesmon/scripts/none">
 
     <dl>
-        <dt>sesmon Version:</dt>
-        <dd>
-            <strong><?= isset($dwses_version) && $dwses_version ? $dwses_version : "n/a" ?></strong>
-        </dd>
-    </dl>
-
-    <dl>
         <dt>sesmon Package:</dt>
         <dd>
             <strong><?= isset($dwses_backend) && $dwses_backend ? $dwses_backend : "n/a" ?></strong>
@@ -60,9 +53,9 @@ if (file_exists('/usr/local/emhttp/plugins/dwsesmon/start-failed')) {
     </dl>
 
     <dl>
-        <dt>sg_ses Version:</dt>
+        <dt>sesmon Version:</dt>
         <dd>
-            <strong><?= isset($dwses_sg_version) && $dwses_sg_version ? $dwses_sg_version : "n/a" ?></strong>
+            <strong><?= isset($dwses_version) && $dwses_version ? $dwses_version : "n/a" ?></strong>
         </dd>
     </dl>
 
@@ -70,6 +63,13 @@ if (file_exists('/usr/local/emhttp/plugins/dwsesmon/start-failed')) {
         <dt>sg_ses Package:</dt>
         <dd>
             <strong><?= isset($dwses_sg_backend) && $dwses_sg_backend ? $dwses_sg_backend : "n/a" ?></strong>
+        </dd>
+    </dl>
+
+    <dl>
+        <dt>sg_ses Version:</dt>
+        <dd>
+            <strong><?= isset($dwses_sg_version) && $dwses_sg_version ? $dwses_sg_version : "n/a" ?></strong>
         </dd>
     </dl>
 
@@ -82,15 +82,15 @@ if (file_exists('/usr/local/emhttp/plugins/dwsesmon/start-failed')) {
             </select>
             <?if(file_exists("/var/log/sesmon.log")):?>
             <a onclick="openTerminal('log','sesmon','sesmon.log')" style="color:inherit;margin-left:5px;cursor:help;">
-                <i class="fa fa-book dwses-tip" title="sesmon Service Logs"></i>
-                <?if(version_compare(parse_ini_file('/etc/unraid-version')['version'],'7.1.99', '>')):?> sesmon Service Logs<?endif;?>
+                <i class="fa fa-book dwses-tip" title="Service Logs"></i>
+                <?if(version_compare(parse_ini_file('/etc/unraid-version')['version'],'7.1.99', '>')):?> Service Logs<?endif;?>
             </a>
             <?endif;?>
         </dd>
     </dl>
 
     <blockquote class="inline_help">
-    <p>This setting controls if the sesmon service should be started (now and on system reboot).</p>
+    <p>This setting controls if the service should be started (now and on system reboot).</p>
     </blockquote>
 
     <dl>
@@ -213,7 +213,7 @@ try {
         });
 
         if ( typeof caPluginUpdateCheck === "function" ) {
-            caPluginUpdateCheck("dwsesmon.plg",{name:"sesmon"});
+            caPluginUpdateCheck("dwsesmon.plg",{name:"SCSI Enclosure Monitor"});
         }
     });
 } catch (error) {
