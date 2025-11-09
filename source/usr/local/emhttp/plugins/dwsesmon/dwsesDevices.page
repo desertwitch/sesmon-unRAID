@@ -89,8 +89,16 @@ Cond="@shell_exec('pgrep -x sesmon 2>/dev/null')"
 <div id="dwses-content"></div>
 
 <script>
+try {
     function dwses_safe(val) {
         return (val !== undefined && val !== null) ? val : '';
+    }
+
+    function dwses_formatDate(date) {
+        if (!date) return '';
+
+        const dateObj = new Date(date);
+        return isNaN(dateObj.getTime()) ? '' : dateObj.toLocaleString();
     }
 
     function dwses_sortElementId(a, b) {
@@ -226,7 +234,7 @@ Cond="@shell_exec('pgrep -x sesmon 2>/dev/null')"
             alertDataArray.sort(function(a, b) {
                 return new Date(b.detected_at) - new Date(a.detected_at);
             });
-            alertTimeHtml = ' - Alert: ' + alertDataArray[0].detected_at + ' ' + dwses_getTimeAgo(alertDataArray[0].detected_at, true);
+            alertTimeHtml = ' - Alert: ' + dwses_formatDate(alertDataArray[0].detected_at) + ' ' + dwses_getTimeAgo(alertDataArray[0].detected_at, true);
         }
 
         // Device section header
@@ -234,7 +242,7 @@ Cond="@shell_exec('pgrep -x sesmon 2>/dev/null')"
         html += '<i class="fa fa-chevron-right" id="'+ deviceContentId +'-chevron"></i> ';
         html += (dwses_safe(data.device.description) || folderName) + ' ';
         html += '(' + dwses_safe(data.device.path) + ':' + dwses_safe(data.device.address) + ') - ';
-        html += 'Updated: ' + dwses_safe(data.captured_at) + ' ' + dwses_getTimeAgo(data.captured_at, true) + alertTimeHtml;
+        html += 'Updated: ' + dwses_formatDate(dwses_safe(data.captured_at)) + ' ' + dwses_getTimeAgo(data.captured_at, true) + alertTimeHtml;
         html += '<span class="dwses-status-summary">' + deviceSummary.join(' | ') + '</span>';
         html += '</div>';
 
@@ -261,7 +269,7 @@ Cond="@shell_exec('pgrep -x sesmon 2>/dev/null')"
                 // Alert table header
                 html += '<table class="dwses-alert-file-table tablesorter"><thead>';
                 html += '<tr class="dwses-alert-file-header"><th colspan="10">';
-                html += '<strong>Change Detected:</strong> ' + dwses_safe(alertData.detected_at) + ' ' + dwses_getTimeAgo(alertData.detected_at, false);
+                html += '<strong>Change Detected:</strong> ' + dwses_formatDate(dwses_safe(alertData.detected_at)) + ' ' + dwses_getTimeAgo(alertData.detected_at, false);
                 html += '</th></tr>';
                 html += '<tr>';
                 html += '<th>Element ID</th><th>Description</th><th>Before Status</th><th>Before Desc</th><th>Before Flags</th>';
@@ -465,4 +473,7 @@ Cond="@shell_exec('pgrep -x sesmon 2>/dev/null')"
             dwses_toggleChevron(targetId);
         });
     });
+} catch (error) {
+    console.error('dwsesmon devices error:', error);
+}
 </script>

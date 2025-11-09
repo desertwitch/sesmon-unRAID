@@ -92,54 +92,58 @@ run_sesmon('sesmon test /etc/sesmon/config.yaml', 'configuration test');
 <script src="<?=autov('/plugins/dwsesmon/js/yaml.min.js');?>"></script>
 
 <script>
-$(function(){
-    $('#btnCancel').click(function() {
-        location = '/Settings/dwses';
-    });
+try {
+    $(function(){
+        $('#btnCancel').click(function() {
+            location = '/Settings/dwses';
+        });
 
-    var editor = CodeMirror.fromTextArea($('#editdata')[0], {
-        theme: '<?=($display["theme"] == 'white' || $display["theme"] == 'azure') ? "default" : "dracula";?>',
-        mode: 'yaml',
-        lineNumbers: true,
-        autoRefresh: true
-    });
+        var editor = CodeMirror.fromTextArea($('#editdata')[0], {
+            theme: '<?=($display["theme"] == 'white' || $display["theme"] == 'azure') ? "default" : "dracula";?>',
+            mode: 'yaml',
+            lineNumbers: true,
+            autoRefresh: true
+        });
 
-    editor.setSize(null, 600);
+        editor.setSize(null, 600);
 
-    $('#editfile').fileTreeAttach(null, null, function(file) {
-        $('#editfile').val(file);
-    });
+        $('#editfile').fileTreeAttach(null, null, function(file) {
+            $('#editfile').val(file);
+        });
 
-    $('#editfile').on('change', function () {
-        var Editfile = $('#editfile').val();
-        $.getJSON('/plugins/dwsesmon/include/dwses_edit.php', {editfile: Editfile}, function (data) {
+        $('#editfile').on('change', function () {
+            var Editfile = $('#editfile').val();
+            $.getJSON('/plugins/dwsesmon/include/dwses_edit.php', {editfile: Editfile}, function (data) {
+                    editor.setValue(data);
+                }
+            );
+        });
+
+        $('#editfile').val("/etc/sesmon/config.yaml");
+        var EditfileDefault = $('#editfile').val();
+        $.getJSON('/plugins/dwsesmon/include/dwses_edit.php', {editfile: EditfileDefault}, function (data) {
                 editor.setValue(data);
             }
         );
+
+        $('#btnSubmit').click(function () {
+            editor.save();
+            $.post('/plugins/dwsesmon/include/dwses_save.php', $('#editform').serializeArray(), function (data) {
+                var Title = 'Configuration ';
+
+                if(data.success) {
+                    swal({title: Title+'Saved', text: data.saved+'\n\nIt will be active on next service restart.', timer: 2000, showConfirmButton: false, type:'success'}, function() {
+                        location = '/Settings/dwses';
+                    });
+                }
+                if(data.error) {
+                    swal({title:Title+'Error', text: data.error+'\n\nThere was an error saving the configuration file.', timer: 3500, showConfirmButton: false, type:'error'});
+                }
+
+            }, 'json');
+        });
     });
-
-    $('#editfile').val("/etc/sesmon/config.yaml");
-    var EditfileDefault = $('#editfile').val();
-    $.getJSON('/plugins/dwsesmon/include/dwses_edit.php', {editfile: EditfileDefault}, function (data) {
-            editor.setValue(data);
-        }
-    );
-
-    $('#btnSubmit').click(function () {
-        editor.save();
-        $.post('/plugins/dwsesmon/include/dwses_save.php', $('#editform').serializeArray(), function (data) {
-            var Title = 'Configuration ';
-
-            if(data.success) {
-                swal({title: Title+'Saved', text: data.saved+'\n\nIt will be active on next service restart.', timer: 2000, showConfirmButton: false, type:'success'}, function() {
-                    location = '/Settings/dwses';
-                });
-            }
-            if(data.error) {
-                swal({title:Title+'Error', text: data.error+'\n\nThere was an error saving the configuration file.', timer: 3500, showConfirmButton: false, type:'error'});
-            }
-
-        }, 'json');
-    });
-});
+} catch (error) {
+    console.error('dwsesmon editor error:', error);
+}
 </script>

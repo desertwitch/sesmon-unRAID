@@ -68,23 +68,27 @@ Markdown="false"
 </table>
 
 <script>
-function dwsesToggleCollapsible(toggle) {
-  const $collapsible = $('#ms-collapsible');
-  const $toggle = $('#ms-collapsible-toggle');
+try {
+    function dwsesToggleCollapsible(toggle) {
+    const $collapsible = $('#ms-collapsible');
+    const $toggle = $('#ms-collapsible-toggle');
 
-  if (toggle) {
-    const isVisible = $collapsible.is(':visible');
-    $collapsible.toggle();
-    $toggle.html(!isVisible ? '&#9650;' : '&#9660;');
-    $.cookie('dwsesCollapsed', !isVisible ? 'false' : 'true', { expires: 1, path: '/' });
-  } else {
-    const collapsed = $.cookie('dwsesCollapsed') === 'true';
-    $collapsible.toggle(!collapsed);
-    $toggle.html(!collapsed ? '&#9650;' : '&#9660;');
-  }
+    if (toggle) {
+        const isVisible = $collapsible.is(':visible');
+        $collapsible.toggle();
+        $toggle.html(!isVisible ? '&#9650;' : '&#9660;');
+        $.cookie('dwsesCollapsed', !isVisible ? 'false' : 'true', { expires: 1, path: '/' });
+    } else {
+        const collapsed = $.cookie('dwsesCollapsed') === 'true';
+        $collapsible.toggle(!collapsed);
+        $toggle.html(!collapsed ? '&#9650;' : '&#9660;');
+    }
+    }
+
+    $(document).ready(function() {
+        dwsesToggleCollapsible(false);
+    });
+} catch (error) {
+    console.error('dwsesmon header error:', error);
 }
-
-$(document).ready(function() {
-    dwsesToggleCollapsible(false);
-});
 </script>

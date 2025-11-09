@@ -162,57 +162,61 @@ if (file_exists('/usr/local/emhttp/plugins/dwsesmon/start-failed')) {
 </form>
 
 <script>
-function dwsesRunning() {
-    if ($('#SERVICE').val() === 'enable') {
-        $('#dwses-set-cmd').val('/usr/local/emhttp/plugins/dwsesmon/scripts/start');
-    } else {
-        $('#dwses-set-cmd').val('/usr/local/emhttp/plugins/dwsesmon/scripts/stop');
+try {
+    function dwsesRunning() {
+        if ($('#SERVICE').val() === 'enable') {
+            $('#dwses-set-cmd').val('/usr/local/emhttp/plugins/dwsesmon/scripts/start');
+        } else {
+            $('#dwses-set-cmd').val('/usr/local/emhttp/plugins/dwsesmon/scripts/stop');
+        }
+
+        const dwses_running = <?= json_encode($dwses_running); ?>;
+
+        if (dwses_running) {
+            $('.dwses-run').prop('disabled', true);
+            $('.dwses-notrun').prop('disabled', false);
+        } else {
+            $('.dwses-run').prop('disabled', false);
+            $('.dwses-notrun').prop('disabled', true);
+        }
     }
 
-    const dwses_running = <?= json_encode($dwses_running); ?>;
-
-    if (dwses_running) {
-        $('.dwses-run').prop('disabled', true);
-        $('.dwses-notrun').prop('disabled', false);
-    } else {
-        $('.dwses-run').prop('disabled', false);
-        $('.dwses-notrun').prop('disabled', true);
+    function dwsesResetConfig() {
+        $('#dwses-set-cmd').val('');
+        openBox('/plugins/dwsesmon/scripts/resetconf', 'sesmon Configuration Reset', 600, 600, true);
     }
+    $(function() {
+        showStatus('sesmon');
+        dwsesRunning();
+
+        $('#SERVICE').change(dwsesRunning);
+
+        $('#RESETCONF').click(function(){ swal({title:"Are you sure?",text:"This action will return any existing configuration to their defaults!",type:"warning",html:true,showCancelButton:true}, dwsesResetConfig); });
+
+        $('#CLEARDEVICES').click(function(){
+            $('#dwses-display-set-cmd').val('/usr/local/emhttp/plugins/dwsesmon/scripts/clear_devices');
+            $('#dwses-display-settings').submit();
+        });
+
+        $('#CLEARALERTS').click(function(){
+            $('#dwses-display-set-cmd').val('/usr/local/emhttp/plugins/dwsesmon/scripts/clear_alerts');
+            $('#dwses-display-settings').submit();
+        });
+
+        $('#RESTART').click(function(){
+            $('#dwses-set-cmd').val('/usr/local/emhttp/plugins/dwsesmon/scripts/restart');
+            $('#dwses-settings').submit();
+        });
+
+        $('.dwses-tip').tooltipster({
+            maxWidth: 300
+        });
+
+        if ( typeof caPluginUpdateCheck === "function" ) {
+            caPluginUpdateCheck("dwsesmon.plg",{name:"sesmon"});
+        }
+    });
+} catch (error) {
+    console.error('dwesmon settings error:', error);
 }
-
-function dwsesResetConfig() {
-    $('#dwses-set-cmd').val('');
-    openBox('/plugins/dwsesmon/scripts/resetconf', 'sesmon Configuration Reset', 600, 600, true);
-}
-$(function() {
-    showStatus('sesmon');
-    dwsesRunning();
-
-    $('#SERVICE').change(dwsesRunning);
-
-    $('#RESETCONF').click(function(){ swal({title:"Are you sure?",text:"This action will return any existing configuration to their defaults!",type:"warning",html:true,showCancelButton:true}, dwsesResetConfig); });
-
-    $('#CLEARDEVICES').click(function(){
-        $('#dwses-display-set-cmd').val('/usr/local/emhttp/plugins/dwsesmon/scripts/clear_devices');
-        $('#dwses-display-settings').submit();
-    });
-
-    $('#CLEARALERTS').click(function(){
-        $('#dwses-display-set-cmd').val('/usr/local/emhttp/plugins/dwsesmon/scripts/clear_alerts');
-        $('#dwses-display-settings').submit();
-    });
-
-    $('#RESTART').click(function(){
-        $('#dwses-set-cmd').val('/usr/local/emhttp/plugins/dwsesmon/scripts/restart');
-        $('#dwses-settings').submit();
-    });
-
-    $('.dwses-tip').tooltipster({
-        maxWidth: 300
-    });
-
-    if ( typeof caPluginUpdateCheck === "function" ) {
-        caPluginUpdateCheck("dwsesmon.plg",{name:"sesmon"});
-    }
-});
 </script>

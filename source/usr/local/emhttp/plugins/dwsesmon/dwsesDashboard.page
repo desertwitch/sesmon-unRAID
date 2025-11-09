@@ -139,111 +139,122 @@ try {
 ?>
 
 <script>
-function dwsesFormatCount(count, color) {
-    if (count > 0) {
-        return '<span style="color:' + color + ';">' + count + '</span>';
-    }
-    return count;
-}
+try {
+    function dwsesFormatDate(date) {
+        if (!date) return '';
 
-function dwsesTimeAgo(timestamp, withColor) {
-    if (timestamp == undefined || timestamp == null) return '';
-
-    var then = new Date(timestamp);
-    if (isNaN(then.getTime())) {
-        return '';
+        const dateObj = new Date(date);
+        return isNaN(dateObj.getTime()) ? '' : dateObj.toLocaleString();
     }
 
-    var now = new Date();
-    var diffMs = now - then;
-    var diffMins = Math.floor(diffMs / 60000);
-
-    var isStale = diffMins > 10;
-    var timeClass = isStale ? 'red-text' : 'green-text';
-
-    var timeText = '';
-    if (diffMins < 1) {
-        timeText = 'just now';
-    } else if (diffMins < 60) {
-        timeText = diffMins + ' min ago';
-    } else {
-        var hours = Math.floor(diffMins / 60);
-        timeText = hours + ' hour' + (hours > 1 ? 's' : '') + ' ago';
+    function dwsesFormatCount(count, color) {
+        if (count > 0) {
+            return '<span style="color:' + color + ';">' + count + '</span>';
+        }
+        return count;
     }
 
-    if (withColor) {
-        return '<span class="' + timeClass + '">(' + timeText + ')</span>';
-    } else {
-        return '<span>(' + timeText + ')</span>';
+    function dwsesTimeAgo(timestamp, withColor) {
+        if (timestamp == undefined || timestamp == null) return '';
+
+        var then = new Date(timestamp);
+        if (isNaN(then.getTime())) {
+            return '';
+            }
+
+            var now = new Date();
+            var diffMs = now - then;
+            var diffMins = Math.floor(diffMs / 60000);
+
+            var isStale = diffMins > 10;
+            var timeClass = isStale ? 'red-text' : 'green-text';
+
+            var timeText = '';
+            if (diffMins < 1) {
+                timeText = 'just now';
+            } else if (diffMins < 60) {
+                timeText = diffMins + ' min ago';
+            } else {
+                var hours = Math.floor(diffMins / 60);
+                timeText = hours + ' hour' + (hours > 1 ? 's' : '') + ' ago';
+            }
+
+            if (withColor) {
+                return '<span class="' + timeClass + '">(' + timeText + ')</span>';
+            } else {
+                return '<span>(' + timeText + ')</span>';
+            }
     }
-}
-function dwsesDashboards() {
-    var basePath = '/plugins/dwsesmon/json';
-    var cacheBust = '?v=' + Date.now();
+    function dwsesDashboards() {
+        var basePath = '/plugins/dwsesmon/json';
+        var cacheBust = '?v=' + Date.now();
 
-    $.getJSON('/plugins/dwsesmon/include/dwses_list.php' + cacheBust)
-        .done(function(freshData) {
-            $.each(freshData, function(folderName, folderData) {
-                if (!folderData.parsed) return;
+        $.getJSON('/plugins/dwsesmon/include/dwses_list.php' + cacheBust)
+            .done(function(freshData) {
+                $.each(freshData, function(folderName, folderData) {
+                    if (!folderData.parsed) return;
 
-                $.getJSON(basePath + '/' + folderName + '/' + folderData.parsed + cacheBust)
-                    .done(function(data) {
-                        var statusCounts = {
-                            alerts: folderData.alerts.length,
-                            critical: 0,      // status 2
-                            noncritical: 0,   // status 3
-                            unrecoverable: 0, // status 4
-                            ok: 0            // status 1
-                        };
+                    $.getJSON(basePath + '/' + folderName + '/' + folderData.parsed + cacheBust)
+                        .done(function(data) {
+                            var statusCounts = {
+                                alerts: folderData.alerts.length,
+                                critical: 0,      // status 2
+                                noncritical: 0,   // status 3
+                                unrecoverable: 0, // status 4
+                                ok: 0            // status 1
+                            };
 
-                        if (data.raw) {
-                            $.each(data.raw, function(elementId, element) {
-                                if (!element || element.status === undefined) return;
+                            if (data.raw) {
+                                $.each(data.raw, function(elementId, element) {
+                                    if (!element || element.status === undefined) return;
 
-                                var status = Number(element.status);
+                                    var status = Number(element.status);
 
-                                if (status === 2) statusCounts.critical++;
-                                else if (status === 3) statusCounts.noncritical++;
-                                else if (status === 4) statusCounts.unrecoverable++;
-                                else if (status === 1) statusCounts.ok++;
-                            });
-                        }
+                                    if (status === 2) statusCounts.critical++;
+                                    else if (status === 3) statusCounts.noncritical++;
+                                    else if (status === 4) statusCounts.unrecoverable++;
+                                    else if (status === 1) statusCounts.ok++;
+                                });
+                            }
 
-                        if (statusCounts.alerts > 0) {
-                            var alertText = statusCounts.alerts + ' Alert' + (statusCounts.alerts > 1 ? 's' : '');
-                            $('#' + folderName + '-header').html(
-                                '<span style="color:red;">' + alertText + '</span> ' +
-                                '| Last updated: ' + (data.captured_at || 'Unknown') + ' ' + dwsesTimeAgo(data.captured_at, true)
+                            if (statusCounts.alerts > 0) {
+                                var alertText = statusCounts.alerts + ' Alert' + (statusCounts.alerts > 1 ? 's' : '');
+                                $('#' + folderName + '-header').html(
+                                    '<span style="color:red;">' + alertText + '</span> ' +
+                                    '| Last updated: ' + (dwsesFormatDate(data.captured_at) || 'Unknown') + ' ' + dwsesTimeAgo(data.captured_at, true)
+                                );
+                            } else {
+                                $('#' + folderName + '-header').html(
+                                    'Last updated: ' + (dwsesFormatDate(data.captured_at) || 'Unknown') + ' ' + dwsesTimeAgo(data.captured_at, true)
+                                );
+                            }
+
+                            $('#' + folderName + '-body').html(
+                                '<td>' +
+                                    '<span class="w18">' + dwsesFormatCount(statusCounts.alerts, 'red') + ' Alerts</span>' +
+                                    '<span class="w18">' + dwsesFormatCount(statusCounts.critical, 'red') + ' Sensors</span>' +
+                                    '<span class="w18">' + dwsesFormatCount(statusCounts.noncritical, 'orange') + ' Sensors</span>' +
+                                    '<span class="w26">' + dwsesFormatCount(statusCounts.unrecoverable, 'darkred') + ' Sensors</span>' +
+                                    '<span class="w18">' + dwsesFormatCount(statusCounts.ok, 'green') + ' Sensors</span>' +
+                                '</td>'
                             );
-                        } else {
-                            $('#' + folderName + '-header').html(
-                                'Last updated: ' + (data.captured_at || 'Unknown') + ' ' + dwsesTimeAgo(data.captured_at, true)
-                            );
-                        }
-
-                        $('#' + folderName + '-body').html(
-                            '<td>' +
-                                '<span class="w18">' + dwsesFormatCount(statusCounts.alerts, 'red') + ' Alerts</span>' +
-                                '<span class="w18">' + dwsesFormatCount(statusCounts.critical, 'red') + ' Sensors</span>' +
-                                '<span class="w18">' + dwsesFormatCount(statusCounts.noncritical, 'orange') + ' Sensors</span>' +
-                                '<span class="w26">' + dwsesFormatCount(statusCounts.unrecoverable, 'darkred') + ' Sensors</span>' +
-                                '<span class="w18">' + dwsesFormatCount(statusCounts.ok, 'green') + ' Sensors</span>' +
-                            '</td>'
-                        );
-                    })
-                    .fail(function(jqXHR, textStatus, errorThrown) {
-                        console.error('Failed to update dashboard for ' + folderName + ':', textStatus, errorThrown);
-                    });
+                        })
+                        .fail(function(jqXHR, textStatus, errorThrown) {
+                            console.error('Failed to update dashboard for ' + folderName + ':', textStatus, errorThrown);
+                        });
+                });
+            })
+            .fail(function(jqXHR, textStatus, errorThrown) {
+                console.error('Failed to fetch fresh folder list:', textStatus, errorThrown);
             });
-        })
-        .fail(function(jqXHR, textStatus, errorThrown) {
-            console.error('Failed to fetch fresh folder list:', textStatus, errorThrown);
-        });
-}
+    }
 
-$(function() {
-    dwsesDashboards();
-    timers.dwsesDashboards = setInterval(dwsesDashboards, 15000);
-});
+    $(function() {
+        dwsesDashboards();
+        timers.dwsesDashboards = setInterval(dwsesDashboards, 15000);
+    });
+} catch (error) {
+    console.error('dwsesmon dashboard error:', error);
+}
 </script>
 <?endif;?>
