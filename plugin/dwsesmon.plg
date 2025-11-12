@@ -19,6 +19,7 @@
 <CHANGES>
 ## SCSI Enclosure Monitor for UNRAID
 ###2025.11.12
+- new: sesmon service was updated to latest release version (v0.1.1)
 - fix: use --no-time with sg_ses (some devices do not support timestamps)
 ###2025.11.09
 - release note: welcome to the first version of the package.
