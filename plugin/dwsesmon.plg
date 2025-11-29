@@ -18,6 +18,8 @@
 
 <CHANGES>
 ## SCSI Enclosure Monitor for UNRAID
+###2025.11.29
+- fix: segmentation fault in sg_ses (thanks Wu23333)
 ###2025.11.12
 - new: sesmon service was updated to latest release version (v0.1.1)
 - fix: use --no-time with sg_ses (some devices do not support timestamps)
@@ -29,6 +31,11 @@
 <FILE Name="&plgPATH;/sesmon-0.1.1-x86_64-1.txz" Min="7.0" Run="upgradepkg --install-new">
 <URL>&pkgURL;/sesmon-0.1.1-x86_64-1.txz</URL>
 <MD5>146632fb75ab2de85bb7e592cd80a896</MD5>
+</FILE>
+
+<FILE Name="&plgPATH;/sg3_utils-1.48-x86_64-2.txz" Min="7.0" Run="upgradepkg --install-new">
+<URL>&pkgURL;/sg3_utils-1.48-x86_64-2.txz</URL>
+<MD5>ca0129520c39b9e18e8c05e32a1220ed</MD5>
 </FILE>
 
 <FILE Name="&plgPATH;/&plgNAME;.txz" Min="7.0" Run="upgradepkg --install-new">
@@ -96,6 +103,7 @@ if [ -x /etc/rc.d/rc.sesmon ]; then
     fi
 fi
 
+rm -f &plgPATH;/sg3*.txz
 removepkg &plgPATH;/*.txz
 rm -f &plgPATH;/*.txz
 rm -rf &emhttp;
