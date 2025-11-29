@@ -3,7 +3,7 @@
 <!DOCTYPE PLUGIN [
 <!ENTITY name      "dwsesmon">
 <!ENTITY author    "desertwitch">
-<!ENTITY version   "2025.11.12">
+<!ENTITY version   "2025.11.29">
 <!ENTITY launch    "Settings/dwses">
 <!ENTITY gitURL    "https://raw.githubusercontent.com/&author;/sesmon-unRAID/main">
 <!ENTITY pluginURL "&gitURL;/plugin/&name;.plg">
